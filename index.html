@@ -421,10 +421,57 @@
       border-color: var(--primary);
     }
 
+    /* MODAL POPUP CATATAN */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 420px;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--text-main);
+    }
+    .modal-card textarea {
+      width: 100%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.9rem;
+      outline: none;
+      min-height: 100px;
+      resize: vertical;
+      margin-bottom: 1rem;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
     /* 4. READER SCREEN */
     #reader-screen {
       background: var(--bg-canvas);
-      touch-action: none; /* Mendukung custom pinch & touch gesture */
     }
 
     .reader-header {
@@ -485,6 +532,7 @@
       align-items: flex-start;
       padding: 1.5rem 1rem 4rem 1rem;
       position: relative;
+      touch-action: pan-x pan-y;
     }
 
     canvas {
@@ -522,6 +570,18 @@
   </style>
 </head>
 <body>
+
+  <!-- MODAL POPUP SIMPAN CATATAN -->
+  <div id="note-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 id="modal-title">Simpan Halaman & Catatan</h3>
+      <textarea id="modal-note-input" placeholder="Tulis poin-poin penting pada halaman ini..."></textarea>
+      <div class="modal-actions">
+        <button class="btn" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);" onclick="app.closeNoteModal()">Batal</button>
+        <button class="btn" onclick="app.saveNoteFromModal()">Simpan Catatan</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 1. SPLASH SCREEN -->
   <div id="splash-screen" class="screen active">
@@ -588,6 +648,9 @@
         <button class="btn-icon" onclick="app.toggleTheme()" title="Ganti Tema">
           <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         </button>
+        <button class="btn-icon" onclick="app.logout()" title="Keluar (Logout)" style="color: #ef4444;">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </button>
       </div>
     </div>
 
@@ -621,14 +684,15 @@
         </button>
         <span>Halaman Tersimpan & Catatan</span>
       </div>
+      <button class="btn-icon" onclick="app.logout()" title="Keluar (Logout)" style="color: #ef4444;">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
     </div>
 
     <div class="bookmark-content">
       <div class="bookmark-card">
         <div class="toc-header-title">PENANDA & CATATAN PENTING</div>
-        <div id="bookmarks-list">
-          <!-- Item catatan dimuat secara dinamis -->
-        </div>
+        <div id="bookmarks-list"></div>
       </div>
     </div>
 
@@ -667,7 +731,7 @@
           <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
         </button>
 
-        <button class="btn-icon" onclick="app.saveBookmark()" title="Simpan Halaman & Catatan">
+        <button class="btn-icon" onclick="app.openNoteModal()" title="Simpan Halaman & Catatan">
           <svg class="icon" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
         </button>
       </div>
@@ -786,7 +850,7 @@
           }
         });
 
-        // PING TO ZOOM & SWIPE GESTURES
+        // PINCH-TO-ZOOM & SWIPE GESTURES YANG DIOPTIMALKAN
         let initialDistance = null;
         let startX = 0;
         const container = document.getElementById('pdf-viewer-container');
@@ -808,10 +872,10 @@
               e.touches[0].clientX - e.touches[1].clientX,
               e.touches[0].clientY - e.touches[1].clientY
             );
-            if (currentDistance > initialDistance + 30) {
+            if (currentDistance > initialDistance + 40) {
               this.zoomIn();
               initialDistance = currentDistance;
-            } else if (currentDistance < initialDistance - 30) {
+            } else if (currentDistance < initialDistance - 40) {
               this.zoomOut();
               initialDistance = currentDistance;
             }
@@ -820,16 +884,16 @@
 
         container.addEventListener('touchend', e => {
           initialDistance = null;
-          if (e.changedTouches.length === 1) {
+          if (e.changedTouches.length === 1 && e.touches.length === 0) {
             let endX = e.changedTouches[0].clientX;
-            if (endX < startX - 60) this.nextPage();
-            if (endX > startX + 60) this.prevPage();
+            if (endX < startX - 70) this.nextPage();
+            if (endX > startX + 70) this.prevPage();
           }
         });
 
         if ('serviceWorker' in navigator) {
           const swCode = `
-            const CACHE = 'kurniapedia-pwa-v4';
+            const CACHE = 'kurniapedia-pwa-v5';
             self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/', '/index.html', '/buku.enc']))));
             self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
           `;
@@ -846,6 +910,13 @@
         const pwdInput = document.getElementById('password');
         const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
         pwdInput.setAttribute('type', type);
+      },
+
+      logout: function() {
+        localStorage.removeItem('is_logged_in');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        this.showScreen('login-screen');
       },
 
       renderTocItems: function() {
@@ -948,15 +1019,29 @@
         this.queueRenderPage(pageNum);
       },
 
-      // SIMPAN HALAMAN & CATATAN PENTING
-      saveBookmark: function() {
-        localStorage.setItem('saved_page', pageNum);
+      // FITUR MODAL POPUP CATATAN & SIMPAN HALAMAN
+      openNoteModal: function() {
         let bookmarks = JSON.parse(localStorage.getItem('kurniapedia_notes') || '{}');
-        if (!bookmarks[pageNum]) {
-          bookmarks[pageNum] = "Tulis catatan penting di sini...";
-          localStorage.setItem('kurniapedia_notes', JSON.stringify(bookmarks));
-        }
-        alert(`Halaman ${pageNum} berhasil disimpan ke daftar catatan!`);
+        let existingNote = bookmarks[pageNum] || "";
+        document.getElementById('modal-title').textContent = `Simpan Halaman ${pageNum} & Catatan`;
+        document.getElementById('modal-note-input').value = existingNote === "Tulis catatan penting di sini..." ? "" : existingNote;
+        document.getElementById('note-modal').style.display = 'flex';
+      },
+
+      closeNoteModal: function() {
+        document.getElementById('note-modal').style.display = 'none';
+      },
+
+      saveNoteFromModal: function() {
+        const noteText = document.getElementById('modal-note-input').value.trim();
+        localStorage.setItem('saved_page', pageNum);
+        
+        let bookmarks = JSON.parse(localStorage.getItem('kurniapedia_notes') || '{}');
+        bookmarks[pageNum] = noteText || "Catatan kosong.";
+        localStorage.setItem('kurniapedia_notes', JSON.stringify(bookmarks));
+
+        this.closeNoteModal();
+        alert(`Halaman ${pageNum} dan catatan berhasil disimpan!`);
       },
 
       renderBookmarks: function() {
