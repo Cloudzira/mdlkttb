@@ -773,7 +773,7 @@
       opacity: 0;
       pointer-events: none;
       transition: all 0.3s ease;
-      z-index: 100;
+      z-index: 150;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -783,7 +783,7 @@
     #toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
     #toast button { background: none; border: none; color: #e6bf68; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
 
-    #modal, #note-modal {
+    #modal, #note-modal, #about-modal {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.55);
@@ -795,7 +795,7 @@
       padding: 1.5rem;
       z-index: 120;
     }
-    #modal.show, #note-modal.show { display: flex; }
+    #modal.show, #note-modal.show, #about-modal.show { display: flex; }
     .note-box { max-width: 420px; }
     .note-chapter { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.9rem; line-height: 1.4; }
     .note-delete { display: block; margin: 0.9rem auto 0; background: none; border: none; color: var(--danger); font-weight: 600; font-size: 0.8rem; cursor: pointer; padding: 6px 10px; }
@@ -813,6 +813,55 @@
     .modal-box p { color: var(--text-muted); font-size: 0.875rem; line-height: 1.5; margin-bottom: 1.25rem; }
     .modal-actions { display: flex; gap: 10px; }
     .modal-actions .btn { flex: 1; }
+
+    /* ============ ABOUT & SOSMED ============ */
+    .about-box { max-width: 380px; max-height: 90vh; max-height: 90dvh; overflow-y: auto; text-align: center; position: relative; padding: 1.75rem 1.5rem 1.25rem; }
+    .about-close { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; }
+    .about-logo { height: 92px; margin: 0 auto 0.9rem; filter: drop-shadow(0 4px 12px var(--accent-glow)); }
+    .about-box h3 { font-size: 1.2rem; font-weight: 800; }
+    .about-version { display: inline-block; margin: 0.4rem 0 0.9rem; padding: 2px 10px; border-radius: 20px; background: var(--primary-light); color: var(--primary); font-size: 0.72rem; font-weight: 700; }
+    .about-box .about-desc { font-size: 0.85rem; line-height: 1.6; margin-bottom: 1rem; }
+    .about-features { list-style: none; text-align: left; margin: 0 0 1.1rem; font-size: 0.83rem; line-height: 1.5; }
+    .about-features li { position: relative; padding: 0.3rem 0 0.3rem 1.5rem; color: var(--text-main); }
+    .about-features li::before { content: '✓'; position: absolute; left: 0; color: var(--primary); font-weight: 800; }
+    .about-divider { height: 1px; background: var(--border-color); margin: 0.25rem 0 1rem; }
+    .about-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.7rem; }
+    .about-footer { margin-top: 1.1rem; font-size: 0.75rem; color: var(--text-muted); }
+    .about-box .btn { width: 100%; margin-top: 1rem; }
+
+    .socials { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+    .social-btn {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--primary); cursor: pointer; text-decoration: none;
+      box-shadow: var(--shadow-sm); transition: all 0.2s ease;
+    }
+    .social-btn:hover { background: var(--primary-light); border-color: var(--primary); transform: translateY(-2px); }
+    .social-btn .icon { width: 20px; height: 20px; }
+    .social-btn .icon.brand { fill: currentColor; stroke: none; width: 19px; height: 19px; }
+
+    .login-socials {
+      position: absolute; left: 0; right: 0;
+      bottom: calc(48px + var(--safe-bottom));
+      display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 0 1rem;
+    }
+
+    .about-link {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; margin-top: 1rem; padding: 6px;
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 0.8rem; font-weight: 600;
+    }
+    .about-link:hover { color: var(--primary); }
+    .about-link .icon { width: 15px; height: 15px; }
+
+    /* Layar pendek: sosmed ikut mengalir di bawah kartu agar tidak menimpa */
+    @media (max-height: 700px) {
+      #login-screen { overflow-y: auto; justify-content: flex-start; padding-bottom: 4rem; }
+      #login-screen .auth-card { margin-top: auto; }
+      .login-socials { position: static; margin: 1.25rem 0 auto; }
+    }
 
     @media (min-width: 768px) {
       .toc-item-title { font-size: 0.95rem; }
@@ -877,7 +926,13 @@
           <svg class="icon" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </button>
       </form>
+
+      <button type="button" class="about-link" onclick="app.openAbout()">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>Tentang Aplikasi</span>
+      </button>
     </div>
+    <div class="login-socials" id="login-socials"></div>
     <footer class="app-footer floating">Crafted with ♥ by Kurniapedia 2026</footer>
   </div>
 
@@ -888,6 +943,9 @@
         <img class="app-logo brand-logo" alt="Logo"><span>Modul Al Fatih</span>
       </div>
       <div class="top-actions">
+        <button class="btn-icon" onclick="app.openAbout()" title="Tentang Aplikasi" aria-label="Tentang aplikasi">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </button>
         <button class="btn-icon" onclick="app.showBookmarks()" title="Halaman Tersimpan & Catatan" aria-label="Catatan">
           <svg class="icon" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
         </button>
@@ -1033,6 +1091,30 @@
   <!-- TOAST & MODAL -->
   <div id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button id="toast-action" style="display:none;"></button></div>
 
+  <div id="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
+    <div class="modal-box about-box">
+      <button class="btn-icon about-close" id="about-close" type="button" aria-label="Tutup">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <img class="app-logo about-logo" alt="Logo Al Fatih">
+      <h3 id="about-title">Modul Al Fatih Reader</h3>
+      <div class="about-version">Versi <span id="about-version"></span></div>
+      <p class="about-desc">Aplikasi pembaca digital Modul Kuttab dan Madrasah Al Fatih. Dibuat agar modul mudah dibaca, dicatat, dan dipelajari kapan saja, di HP maupun laptop.</p>
+      <ul class="about-features">
+        <li>Daftar isi dengan pencarian bab</li>
+        <li>Lanjut baca otomatis dari halaman terakhir</li>
+        <li>Penanda halaman dan catatan pribadi</li>
+        <li>Mode tema gelap, terang, dan baca malam</li>
+        <li>Bisa dipasang sebagai aplikasi dan dibaca offline</li>
+      </ul>
+      <div class="about-divider"></div>
+      <div class="about-label">Ikuti Kami</div>
+      <div class="socials" id="about-socials"></div>
+      <div class="about-footer">Crafted with ♥ by Kurniapedia 2026</div>
+      <button class="btn" id="about-ok" type="button">Tutup</button>
+    </div>
+  </div>
+
   <div id="note-modal" role="dialog" aria-modal="true" aria-labelledby="note-title">
     <div class="modal-box note-box">
       <h3 id="note-title">Simpan Halaman</h3>
@@ -1070,6 +1152,16 @@
     const MAX_PAGE_WIDTH = 900;            // lebar maksimum halaman di layar besar (px)
     const ZOOM_MIN = 0.5, ZOOM_MAX = 4;
     const NOTE_PLACEHOLDER_OLD = 'Tulis poin catatan penting di sini...';
+    const APP_VERSION = '2.0.0';
+
+    // ===== MEDIA SOSIAL =====
+    // Untuk mengganti akun: ubah isi 'url'. Untuk menghapus ikon: hapus barisnya.
+    const SOCIALS = [
+      { name: 'Instagram', url: 'https://instagram.com/kurniapedia', vb: '0 0 448 512', path: 'M224.3 141a115 115 0 1 0-.6 230 115 115 0 1 0 .6-230m-.6 40.4a74.6 74.6 0 1 1 .6 149.2 74.6 74.6 0 1 1-.6-149.2m93.4-45.1a26.8 26.8 0 1 1 53.6 0 26.8 26.8 0 1 1-53.6 0m129.7 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8M399 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1' },
+      { name: 'TikTok', url: 'https://tiktok.com/@kurniapedia', vb: '0 0 448 512', path: 'M448.5 209.9c-44 .1-87-13.6-122.8-39.2v178.7c0 33.1-10.1 65.4-29 92.6s-45.6 48-76.6 59.6-64.8 13.5-96.9 5.3-60.9-25.9-82.7-50.8-35.3-56-39-88.9 2.9-66.1 18.6-95.2 40-52.7 69.6-67.7 62.9-20.5 95.7-16v89.9c-15-4.7-31.1-4.6-46 .4s-27.9 14.6-37 27.3-14 28.1-13.9 43.9 5.2 31 14.5 43.7 22.4 22.1 37.4 26.9 31.1 4.8 46-.1 28-14.4 37.2-27.1 14.2-28.1 14.2-43.8V0h88c-.1 7.4.6 14.9 1.9 22.2 3.1 16.3 9.4 31.9 18.7 45.7s21.3 25.6 35.2 34.6c19.9 13.1 43.2 20.1 67 20.1V210z' },
+      { name: 'YouTube', url: 'https://www.youtube.com/@kurniapedia', vb: '0 0 576 512', path: 'M549.7 124.1c-6.2-23.7-24.8-42.3-48.3-48.6C458.9 64 288.1 64 288.1 64S117.3 64 74.7 75.5c-23.5 6.3-42 24.9-48.3 48.6C15 167 15 256.4 15 256.4s0 89.4 11.4 132.3c6.3 23.6 24.8 41.5 48.3 47.8C117.3 448 288.1 448 288.1 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zM232.2 337.6V175.2l142.7 81.2z' },
+      { name: 'WhatsApp', url: 'https://wa.me/6285870906050', vb: '0 0 448 512', path: 'M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157m-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1s56.2 81.2 56.1 130.5c0 101.8-84.9 184.6-186.6 184.6m101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8s-14.3 18-17.6 21.8c-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7s-12.5-30.1-17.1-41.2c-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2s-9.7 1.4-14.8 6.9c-5.1 5.6-19.4 19-19.4 46.3s19.9 53.7 22.6 57.4c2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4s4.6-24.1 3.2-26.4c-1.3-2.5-5-3.9-10.5-6.6' }
+    ];
 
     const TOC_DATA = [
       { title: "KUTTAB", page: 5, isSub: false },
@@ -1224,6 +1316,7 @@
       init() {
         this.applyThemeIcon();
         this.applyNight();
+        this.renderSocials();
         this.renderTocItems();
         this.renderBookmarks();
         this.updateProgressCard();
@@ -1384,6 +1477,38 @@
         } else {
           this.toast('Gunakan menu browser lalu pilih "Install aplikasi" / "Tambahkan ke layar utama".');
         }
+      },
+
+      // ---------- ABOUT & MEDIA SOSIAL ----------
+      renderSocials() {
+        const html = SOCIALS.map((s, i) => {
+          const svg = `<svg class="icon brand" viewBox="${s.vb}" aria-hidden="true"><path d="${s.path}"></path></svg>`;
+          return s.url
+            ? `<a class="social-btn" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(s.name)}" aria-label="${escapeHtml(s.name)}">${svg}</a>`
+            : `<button type="button" class="social-btn" data-social="${i}" title="${escapeHtml(s.name)}" aria-label="${escapeHtml(s.name)}">${svg}</button>`;
+        }).join('');
+        ['login-socials', 'about-socials'].forEach(id => {
+          const el = $(id);
+          el.innerHTML = html;
+          el.querySelectorAll('[data-social]').forEach(b => b.addEventListener('click', () => {
+            this.toast(`Tautan ${SOCIALS[parseInt(b.dataset.social)].name} belum diisi`);
+          }));
+        });
+      },
+
+      openAbout() {
+        const modal = $('about-modal');
+        $('about-version').textContent = APP_VERSION;
+        modal.classList.add('show');
+        $('about-close').onclick = $('about-ok').onclick = () => this.closeAbout();
+        modal.onclick = (e) => { if (e.target === modal) this.closeAbout(); };
+        $('about-ok').focus();
+      },
+
+      closeAbout() {
+        const modal = $('about-modal');
+        modal.classList.remove('show');
+        modal.onclick = $('about-close').onclick = $('about-ok').onclick = null;
       },
 
       // ---------- TOAST & MODAL ----------
@@ -1840,7 +1965,8 @@
       onKeyDown(e) {
         if ((e.ctrlKey || e.metaKey) && ['s', 'p', 'u'].includes(e.key.toLowerCase())) { e.preventDefault(); return; }
         if (e.key === 'F12') { e.preventDefault(); return; }
-        if ($('note-modal').classList.contains('show') || $('modal').classList.contains('show')) return;
+        if (e.key === 'Escape' && $('about-modal').classList.contains('show')) { this.closeAbout(); return; }
+        if ($('note-modal').classList.contains('show') || $('modal').classList.contains('show') || $('about-modal').classList.contains('show')) return;
 
         if (!$('reader-screen').classList.contains('active')) return;
         const tag = (e.target.tagName || '').toLowerCase();
