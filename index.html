@@ -801,7 +801,7 @@
     #modal.show, #note-modal.show, #about-modal.show { display: flex; }
     .note-box { max-width: 420px; }
     .note-chapter { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.9rem; line-height: 1.4; }
-    .note-delete { display: block; margin: 0.9rem auto 0; background: none; border: none; color: var(--danger); font-weight: 600; font-size: 0.8rem; cursor: pointer; padding: 6px 10px; }
+    .note-delete { display: block; margin: 0.9rem auto 0; background: none; border: none; color: var(--primary); font-weight: 600; font-size: 0.8rem; cursor: pointer; padding: 6px 10px; text-decoration: underline; text-underline-offset: 3px; }
     .modal-box {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -2005,7 +2005,7 @@
           const hasText = (ta.value || '').trim().length > 0;
           close();
           if (hasText) {
-            const ok = await this.confirm('Hapus penanda?', `Penanda dan catatan halaman ${p} akan dihapus.`, 'Hapus');
+            const ok = await this.confirm('Hapus penanda?', `Penanda dan catatan halaman ${p} akan dihapus.`, 'Hapus', false);
             if (!ok) return;
           }
           const all = this.getNotes();
@@ -2039,7 +2039,7 @@
                 <button class="bm-page-badge" data-open="${p}">Buka Halaman ${p}</button>
                 <div class="bm-chapter">${escapeHtml(this.chapterTitleForPage(p))}</div>
               </div>
-              <button class="btn-icon danger" style="width:32px;height:32px;" data-delete="${p}" title="Hapus" aria-label="Hapus penanda halaman ${p}">
+              <button class="btn-icon" style="width:32px;height:32px;" data-delete="${p}" title="Hapus" aria-label="Hapus penanda halaman ${p}">
                 <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               </button>
             </div>
@@ -2059,7 +2059,7 @@
       },
 
       async deleteBookmark(page) {
-        const ok = await this.confirm('Hapus penanda?', `Penanda dan catatan halaman ${page} akan dihapus.`, 'Hapus');
+        const ok = await this.confirm('Hapus penanda?', `Penanda dan catatan halaman ${page} akan dihapus.`, 'Hapus', false);
         if (!ok) return;
         const notes = this.getNotes();
         delete notes[page];
