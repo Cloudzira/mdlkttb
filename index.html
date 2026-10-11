@@ -841,12 +841,6 @@
     .social-btn .icon { width: 20px; height: 20px; }
     .social-btn .icon.brand { fill: currentColor; stroke: none; width: 19px; height: 19px; }
 
-    .login-socials {
-      position: absolute; left: 0; right: 0;
-      bottom: calc(48px + var(--safe-bottom));
-      display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 0 1rem;
-    }
-
     .about-link {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       width: 100%; margin-top: 1rem; padding: 6px;
@@ -856,11 +850,10 @@
     .about-link:hover { color: var(--primary); }
     .about-link .icon { width: 15px; height: 15px; }
 
-    /* Layar pendek: sosmed ikut mengalir di bawah kartu agar tidak menimpa */
+    /* Layar pendek: kartu login bisa digulir agar tidak terpotong */
     @media (max-height: 700px) {
       #login-screen { overflow-y: auto; justify-content: flex-start; padding-bottom: 4rem; }
-      #login-screen .auth-card { margin-top: auto; }
-      .login-socials { position: static; margin: 1.25rem 0 auto; }
+      #login-screen .auth-card { margin: auto 0; }
     }
 
     @media (min-width: 768px) {
@@ -932,7 +925,6 @@
         <span>Tentang Aplikasi</span>
       </button>
     </div>
-    <div class="login-socials" id="login-socials"></div>
     <footer class="app-footer floating">Crafted with ♥ by Kurniapedia 2026</footer>
   </div>
 
@@ -1487,7 +1479,7 @@
             ? `<a class="social-btn" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(s.name)}" aria-label="${escapeHtml(s.name)}">${svg}</a>`
             : `<button type="button" class="social-btn" data-social="${i}" title="${escapeHtml(s.name)}" aria-label="${escapeHtml(s.name)}">${svg}</button>`;
         }).join('');
-        ['login-socials', 'about-socials'].forEach(id => {
+        ['about-socials'].forEach(id => {
           const el = $(id);
           el.innerHTML = html;
           el.querySelectorAll('[data-social]').forEach(b => b.addEventListener('click', () => {
