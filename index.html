@@ -1,73 +1,174 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kurniapedia Secure Reader</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-</head>
-<body>
-
-  <!-- SPLASH -->
-  <div id="splash-screen" class="screen active">
-    <h1>Kurniapedia Reader</h1>
-    <p>Menyiapkan sistem aman...</p>
-    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
-  </div>
-
-  <!-- LOGIN -->
-  <div id="login-screen" class="screen">
-    <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
-      <div class="auth-container">
-        <h2>Silakan Masuk</h2>
-        <form id="login-form">
-          <div class="form-group">
-            <label>Nama / Email</label>
-            <input type="text" id="username" required placeholder="Masukkan nama...">
-          </div>
-          <button type="submit">Masuk</button>
-        </form>
-      </div>
-    </div>
-    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
-  </div>
-
-  <!-- DAFTAR ISI -->
+<!-- 3. DAFTAR ISI SCREEN -->
   <div id="toc-screen" class="screen">
-    <div style="flex: 1; padding: 2rem; max-width: 600px; margin: 0 auto; width: 100%;">
-      <h2>Daftar Isi & Navigasi</h2>
-      <ul class="toc-list">
-        <li onclick="app.goToPage(1)">Bab 1: Pendahuluan (Halaman 1)</li>
-        <li onclick="app.goToPage(5)">Bab 2: Pembahasan Utama (Halaman 5)</li>
-        <li onclick="app.goToPage(10)">Bab 3: Kesimpulan (Halaman 10)</li>
-      </ul>
-      <button style="margin-top: 2rem;" onclick="app.openReader()">Buka Halaman Terakhir</button>
-    </div>
-    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
-  </div>
-
-  <!-- READER -->
-  <div id="reader-screen" class="screen">
-    <header class="reader-header">
-      <h3 id="watermark-title">Secure Viewer</h3>
-      <div class="toolbar">
-        <button onclick="app.prevPage()">◀ Prev</button>
-        <span>Hal <input type="number" id="page-num" style="width: 50px; text-align: center;" value="1"> / <span id="page-count">0</span></span>
-        <button onclick="app.nextPage()">Next ▶</button>
-        <button onclick="app.zoomIn()">Zoom +</button>
-        <button onclick="app.zoomOut()">Zoom -</button>
-        <button onclick="app.saveBookmark()">Simpan Hal</button>
-        <button onclick="app.toggleFullscreen()">Full Screen</button>
-        <button onclick="app.showToc()">Daftar Isi</button>
+    <div class="toc-container-box">
+      <h2>Daftar Isi</h2>
+      
+      <div class="toc-item" onclick="app.goToPage(5)">
+        <span class="toc-title">KUTTAB</span>
+        <span class="toc-page">5</span>
       </div>
-    </header>
-    <div id="pdf-viewer-container">
-      <canvas id="pdf-canvas"></canvas>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(7)">
+        <span class="toc-title">Bermodal Keyakinan, Berharap Kebesaran</span>
+        <span class="toc-page">7</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(9)">
+        <span class="toc-title">Kuttab</span>
+        <span class="toc-page">9</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(17)">
+        <span class="toc-title">Visi Rasulullah ﷺ untuk Generasi Abad 21</span>
+        <span class="toc-page">17</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(25)">
+        <span class="toc-title">Potret Akhir Generasi</span>
+        <span class="toc-page">25</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(34)">
+        <span class="toc-title">Karakter Imani</span>
+        <span class="toc-page">34</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(44)">
+        <span class="toc-title">Sentuhan Nabi dalam Mendidik Anak dan Para Pemuda</span>
+        <span class="toc-page">44</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(70)">
+        <span class="toc-title">Makkiyyah-Madaniyyah: Rahasia Urutan Kurikulum <em>Nubuwwah</em></span>
+        <span class="toc-page">70</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(89)">
+        <span class="toc-title">Menjadi Guru Seperti Rasulullah ﷺ</span>
+        <span class="toc-page">89</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(107)">
+        <span class="toc-title">Mengapa Harus Menghafal Al-Qur'an?</span>
+        <span class="toc-page">107</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(113)">
+        <span class="toc-title">Menuju Generasi Qur'ani</span>
+        <span class="toc-page">113</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(123)">
+        <span class="toc-title">Bagaimana Al-Qur'an Memprogram Hidup</span>
+        <span class="toc-page">123</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(128)">
+        <span class="toc-title">Perbaikan Bumi di Antara Angka Tiga</span>
+        <span class="toc-page">128</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(136)">
+        <span class="toc-title">Surah 'Al-Alaq</span>
+        <span class="toc-page">136</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(144)">
+        <span class="toc-title">Berkisah dalam Al-Qur'an</span>
+        <span class="toc-page">144</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(159)">
+        <span class="toc-title">Teknik Mengaplikasikan Kepribadian Qur'ani</span>
+        <span class="toc-page">159</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(165)">
+        <span class="toc-title">Sains Juz 30</span>
+        <span class="toc-page">165</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(170)">
+        <span class="toc-title">Bahasa Peradaban Masa Depan, Bahasa Al-Qur'an</span>
+        <span class="toc-page">170</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(177)">
+        <span class="toc-title">Landasan Membaca dan Menulis</span>
+        <span class="toc-page">177</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(181)">
+        <span class="toc-title">Landasan Bahasa</span>
+        <span class="toc-page">181</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(185)">
+        <span class="toc-title">Landasan Berhitung</span>
+        <span class="toc-page">185</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(189)">
+        <span class="toc-title">Landasan Keterampilan Hidup</span>
+        <span class="toc-page">189</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(193)">
+        <span class="toc-title">Landasan Olahraga</span>
+        <span class="toc-page">193</span>
+      </div>
+      <div class="toc-item" onclick="app.goToPage(199)">
+        <span class="toc-title">MADRASAH</span>
+        <span class="toc-page">199</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(201)">
+        <span class="toc-title">Mukaddimah</span>
+        <span class="toc-page">201</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(203)">
+        <span class="toc-title">Seutas Tali</span>
+        <span class="toc-page">203</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(205)">
+        <span class="toc-title">Kelas Persiapan, Kuttab Mini</span>
+        <span class="toc-page">205</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(211)">
+        <span class="toc-title"><em>Al-Hafizh</em> di Madrasah Kami</span>
+        <span class="toc-page">211</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(216)">
+        <span class="toc-title">Madrasah Syafi'iyyah</span>
+        <span class="toc-page">216</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(225)">
+        <span class="toc-title">Kurikulum Hadits</span>
+        <span class="toc-page">225</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(240)">
+        <span class="toc-title">Kurikulum Mutun Ilmiyah</span>
+        <span class="toc-page">240</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(241)">
+        <span class="toc-title">Keseharian Nabi Untuk Keseharian Santri</span>
+        <span class="toc-page">241</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(250)">
+        <span class="toc-title">Kajian Ringan di Tahun Persiapan</span>
+        <span class="toc-page">250</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(254)">
+        <span class="toc-title">Keistimewaan Hari Jumat</span>
+        <span class="toc-page">254</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(264)">
+        <span class="toc-title">Contoh Khutbah Jumat Tematik</span>
+        <span class="toc-page">264</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(271)">
+        <span class="toc-title">Ilmu Wasail</span>
+        <span class="toc-page">271</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(274)">
+        <span class="toc-title">Bahasa Arab Bahasa Peradaban</span>
+        <span class="toc-page">274</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(280)">
+        <span class="toc-title">Akademis di Madrasah Al-Fatih</span>
+        <span class="toc-page">280</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(286)">
+        <span class="toc-title">Tarbiyah Jasadiyyah</span>
+        <span class="toc-page">286</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(289)">
+        <span class="toc-title">Santri-Santri yang Terlatih Mencari Nafkah dan Menafkahi</span>
+        <span class="toc-page">289</span>
+      </div>
+      <div class="toc-item toc-subitem" onclick="app.goToPage(296)">
+        <span class="toc-title">Kurikulum Parenting Nabawiyah</span>
+        <span class="toc-page">296</span>
+      </div>
+
+      <button style="margin-top: 2rem;" onclick="app.openReader()">Buka Halaman Terakhir Dibaca</button>
     </div>
     <footer>Crafted with ♥ by Kurniapedia 2026</footer>
   </div>
-
-  <script src="js/app.js"></script>
-</body>
-</html>
