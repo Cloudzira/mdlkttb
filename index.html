@@ -1,431 +1,940 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Kurniapedia Secure Reader</title>
-  
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <!-- PDF.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <!-- PWA Manifest Inline Data URL -->
-  <link rel="manifest" href='data:application/json,{"name":"Kurniapedia Reader","short_name":"PDFReader","start_url":"/index.html","display":"standalone","background_color":"#ffffff","theme_color":"#2563eb"}'>
+  <link rel="manifest" href='data:application/json,{"name":"Kurniapedia Reader","short_name":"Kurniapedia","start_url":"/index.html","display":"standalone","background_color":"#0f172a","theme_color":"#6366f1"}'>
 
-  <!-- STYLES (CSS INLINE) -->
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg-color: #f8fafc;
-      --text-color: #1e293b;
+      /* Theme Dark (Default) */
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%, #020617 100%);
+      --bg-surface: rgba(30, 41, 59, 0.7);
+      --bg-card: rgba(15, 23, 42, 0.65);
+      --bg-input: rgba(15, 23, 42, 0.6);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --border-hover: rgba(99, 102, 241, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent-cyan: #06b6d4;
+      --glow-color: rgba(99, 102, 241, 0.25);
+      --canvas-bg: #1e293b;
+      --shadow-elevated: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      --glass-blur: blur(16px);
+      --leader-dot: rgba(255, 255, 255, 0.2);
+    }
+
+    [data-theme="light"] {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #e0e7ff 0%, #f1f5f9 60%, #e2e8f0 100%);
+      --bg-surface: rgba(255, 255, 255, 0.8);
+      --bg-card: rgba(255, 255, 255, 0.9);
+      --bg-input: rgba(241, 245, 249, 0.9);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --border-hover: rgba(99, 102, 241, 0.4);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --accent-cyan: #0891b2;
+      --glow-color: rgba(79, 70, 229, 0.15);
+      --canvas-bg: #cbd5e1;
+      --shadow-elevated: 0 20px 40px -15px rgba(0, 0, 0, 0.12);
+      --glass-blur: blur(12px);
+      --leader-dot: rgba(0, 0, 0, 0.15);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
     }
 
+    /* Screen Management */
     .screen {
       display: none;
       flex: 1;
       flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
     }
 
     .screen.active {
       display: flex;
+      opacity: 1;
     }
 
-    /* Splash Screen */
+    /* Glassmorphism Reusable Card */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: var(--shadow-elevated);
+    }
+
+    /* Footer Global */
+    footer {
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    footer span {
+      color: #ef4444;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* Floating Theme Toggle Switch */
+    .theme-toggle-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .theme-toggle-btn:hover {
+      transform: scale(1.08) rotate(15deg);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--glow-color);
+    }
+
     #splash-screen {
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #2563eb, #1e40af);
-      color: white;
       text-align: center;
+      position: relative;
+      background: var(--bg-gradient);
     }
 
-    #splash-screen h1 {
-      font-size: 2.5rem;
+    .splash-logo-wrapper {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .logo-glow-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+      filter: blur(25px);
+      opacity: 0.6;
+      animation: floatGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.4; }
+      100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+    }
+
+    .logo-icon-box {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px var(--glow-color);
+      margin: 0 auto;
+    }
+
+    .logo-icon-box svg {
+      width: 48px;
+      height: 48px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .splash-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text-main) 30%, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
     }
 
-    /* Login Screen */
-    .auth-container {
-      max-width: 400px;
-      margin: auto;
-      padding: 2rem;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      width: 90%;
+    .splash-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
     }
 
-    .form-group {
-      margin-bottom: 1rem;
+    .spinner-bar {
+      width: 160px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 auto;
+      position: relative;
     }
 
-    .form-group label {
+    .spinner-progress {
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+      border-radius: 10px;
+      position: absolute;
+      animation: loadingSlide 1.5s infinite ease-in-out;
+    }
+
+    @keyframes loadingSlide {
+      0% { left: -40%; }
+      100% { left: 100%; }
+    }
+
+    #login-screen {
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 2.5rem 2rem;
+      position: relative;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .login-header p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .input-group {
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .input-group label {
       display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
       margin-bottom: 0.5rem;
-      font-weight: 600;
     }
 
-    .form-group input {
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper input {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
+      padding: 0.85rem 1rem;
+      padding-right: 2.8rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
     }
 
-    button {
-      background-color: var(--primary);
-      color: white;
+    .input-wrapper input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--glow-color);
+    }
+
+    .input-toggle-eye {
+      position: absolute;
+      right: 12px;
+      background: none;
       border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px;
-      font-weight: 600;
+      color: var(--text-muted);
       cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-primary {
       width: 100%;
-      transition: background 0.2s;
+      padding: 0.95rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 25px var(--glow-color);
+      transition: all 0.3s ease;
+      margin-top: 0.5rem;
     }
 
-    button:hover {
-      background-color: var(--primary-dark);
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px var(--glow-color);
+      filter: brightness(1.1);
     }
 
-    /* Reader Header & Toolbar */
-    header.reader-header {
-      background: white;
-      padding: 0.75rem 1.5rem;
-      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    #toc-screen {
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1.5rem 1rem;
+    }
+
+    .toc-header-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
+      margin-bottom: 2rem;
+      padding: 0 0.5rem;
     }
 
-    .toolbar {
+    .toc-title-box h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .toc-title-box p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .toc-list-container {
+      padding: 1.5rem;
+      margin-bottom: 5rem;
+    }
+
+    .toc-item {
       display: flex;
-      gap: 8px;
+      align-items: baseline;
+      padding: 0.8rem 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .toc-item:hover {
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .toc-item:hover .toc-text {
+      color: var(--primary);
+    }
+
+    .toc-text {
+      font-weight: 600;
+      font-size: 0.98rem;
+      color: var(--text-main);
+      z-index: 1;
+      padding-right: 8px;
+      background: transparent;
+    }
+
+    .toc-dots {
+      flex: 1;
+      border-bottom: 1px dashed var(--leader-dot);
+      margin: 0 6px;
+      transform: translateY(-3px);
+    }
+
+    .toc-num {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      z-index: 1;
+      padding-left: 8px;
+    }
+
+    .toc-item.sub-item {
+      padding-left: 2rem;
+    }
+
+    .toc-item.sub-item .toc-text {
+      font-weight: 400;
+      font-size: 0.92rem;
+    }
+
+    .toc-item.section-header {
+      margin-top: 1.2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .toc-item.section-header .toc-text {
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--primary);
+    }
+
+    /* Floating CTA Sticky Button */
+    .sticky-cta-wrapper {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 450px;
+      z-index: 100;
+    }
+
+    .sticky-cta-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px var(--glow-color);
+      backdrop-filter: var(--glass-blur);
+      display: flex;
       align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s ease;
     }
 
-    .toolbar button {
-      width: auto;
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
+    .sticky-cta-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 15px 35px var(--glow-color);
     }
 
-    #pdf-viewer-container {
+    #reader-screen {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .reader-top-bar {
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .reader-title-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .reader-title-box h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+
+    .reader-controls-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card);
+      padding: 4px 8px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+    }
+
+    .tool-btn {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .tool-btn:hover {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--primary);
+    }
+
+    .page-input-box {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 0 6px;
+    }
+
+    .page-input-box input {
+      width: 45px;
+      text-align: center;
+      padding: 4px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-weight: 700;
+      outline: none;
+    }
+
+    .pdf-main-container {
       flex: 1;
       overflow: auto;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 20px;
-      background: #e2e8f0;
+      padding: 1.5rem;
+      background: var(--canvas-bg);
+      position: relative;
+    }
+
+    .pdf-paper-shadow {
+      box-shadow: var(--shadow-elevated);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+      transition: transform 0.2s ease;
     }
 
     canvas {
-      box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
-      background: white;
+      display: block;
       max-width: 100%;
+      height: auto !important;
     }
 
-    /* Halaman Daftar Isi Profesional */
-    .toc-container-box {
-      flex: 1;
-      padding: 2rem;
-      max-width: 800px;
-      margin: 0 auto;
-      width: 100%;
-      overflow-y: auto;
-    }
-
-    .toc-container-box h2 {
-      margin-bottom: 1.5rem;
-      text-align: center;
-      color: #1e293b;
-    }
-
-    .toc-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 0.6rem 0.8rem;
-      border-bottom: 1px dashed #cbd5e1;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .toc-item:hover {
-      background: #f1f5f9;
-      color: var(--primary);
-    }
-
-    .toc-title {
-      font-weight: 500;
-      font-size: 0.95rem;
-    }
-
-    .toc-page {
-      font-weight: 600;
-      color: #475569;
-      padding-left: 10px;
-    }
-
-    .toc-subitem {
-      padding-left: 1.5rem;
-      font-size: 0.9rem;
-      color: #475569;
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.85rem;
-      color: #64748b;
-      background: white;
-      border-top: 1px solid #e2e8f0;
+    /* Responsive Breakdown */
+    @media (max-width: 640px) {
+      .reader-top-bar {
+        padding: 0.5rem 0.8rem;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .reader-title-box h4 {
+        max-width: 150px;
+        font-size: 0.88rem;
+      }
+      .reader-controls-toolbar {
+        width: 100%;
+        justify-content: space-between;
+        overflow-x: auto;
+      }
+      .toc-item.sub-item {
+        padding-left: 1rem;
+      }
+      .sticky-cta-wrapper {
+        bottom: 1.2rem;
+      }
     }
   </style>
 </head>
 <body>
 
+
   <!-- 1. SPLASH SCREEN -->
   <div id="splash-screen" class="screen active">
-    <h1>Kurniapedia Reader</h1>
-    <p>Menyiapkan sistem aman...</p>
-    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+    <div class="splash-logo-wrapper">
+      <div class="logo-glow-ring"></div>
+      <div class="logo-icon-box">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <path d="M12 8l-3 4h6l-3 4"></path>
+        </svg>
+      </div>
+    </div>
+    <h1 class="splash-title">Kurniapedia Reader</h1>
+    <p class="splash-subtitle">Memuat aplikasi secure & terenkripsi...</p>
+    <div class="spinner-bar">
+      <div class="spinner-progress"></div>
+    </div>
+    <footer style="position: absolute; bottom: 0; width: 100%;">
+      Crafted with <span>♥</span> by Kurniapedia 2026
+    </footer>
   </div>
 
   <!-- 2. LOGIN SCREEN -->
   <div id="login-screen" class="screen">
-    <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
-      <div class="auth-container">
-        <h2>Silakan Masuk</h2>
-        <form id="login-form">
-          <div class="form-group">
-            <label>Nama / Email</label>
-            <input type="text" id="username" required placeholder="Masukkan nama...">
-          </div>
-          <button type="submit">Masuk</button>
-        </form>
-      </div>
+    <div style="position: absolute; top: 1.5rem; right: 1.5rem;">
+      <button class="theme-toggle-btn" onclick="app.toggleTheme()" title="Ganti Tema">
+        <span class="theme-icon">🌙</span>
+      </button>
     </div>
-    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+
+    <div class="glass-card login-card">
+      <div class="login-header">
+        <h2>Silakan Masuk</h2>
+        <p>Akses dokumen digital secara aman</p>
+      </div>
+      <form id="login-form">
+        <div class="input-group">
+          <label for="username">Email / Username</label>
+          <div class="input-wrapper">
+            <input type="text" id="username" required placeholder="Masukkan identitas..." autocomplete="off">
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="password">Kata Sandi</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" required placeholder="••••••••">
+            <button type="button" class="input-toggle-eye" onclick="app.togglePasswordVisibility()">
+              👁️
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary">Masuk Aplikasi</button>
+      </form>
+    </div>
+
+    <footer>
+      Crafted with <span>♥</span> by Kurniapedia 2026
+    </footer>
   </div>
 
-  <!-- 3. DAFTAR ISI SCREEN -->
+  <!-- 3. DAFTAR ISI SCREEN (TOC) -->
   <div id="toc-screen" class="screen">
-    <div class="toc-container-box">
-      <h2>Daftar Isi</h2>
-      
-      <div class="toc-item" onclick="app.goToPage(5)">
-        <span class="toc-title">KUTTAB</span>
-        <span class="toc-page">5</span>
+    <div class="toc-header-bar">
+      <div class="toc-title-box">
+        <h2>Daftar Isi</h2>
+        <p id="user-welcome">Selamat datang kembali</p>
       </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(7)">
-        <span class="toc-title">Bermodal Keyakinan, Berharap Kebesaran</span>
-        <span class="toc-page">7</span>
+      <button class="theme-toggle-btn" onclick="app.toggleTheme()" title="Ganti Tema">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
+
+    <div class="glass-card toc-list-container">
+      <div class="toc-item section-header" onclick="app.goToPage(5)">
+        <span class="toc-text">KUTTAB</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">5</span>
       </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(9)">
-        <span class="toc-title">Kuttab</span>
-        <span class="toc-page">9</span>
+      <div class="toc-item sub-item" onclick="app.goToPage(7)">
+        <span class="toc-text">Bermodal Keyakinan, Berharap Kebesaran</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">7</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(9)">
+        <span class="toc-text">Kuttab</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">9</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(17)">
-        <span class="toc-title">Visi Rasulullah ﷺ untuk Generasi Abad 21</span>
-        <span class="toc-page">17</span>
+        <span class="toc-text">Visi Rasulullah ﷺ untuk Generasi Abad 21</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">17</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(25)">
-        <span class="toc-title">Potret Akhir Generasi</span>
-        <span class="toc-page">25</span>
+        <span class="toc-text">Potret Akhir Generasi</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">25</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(34)">
-        <span class="toc-title">Karakter Imani</span>
-        <span class="toc-page">34</span>
+        <span class="toc-text">Karakter Imani</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">34</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(44)">
-        <span class="toc-title">Sentuhan Nabi dalam Mendidik Anak dan Para Pemuda</span>
-        <span class="toc-page">44</span>
+        <span class="toc-text">Sentuhan Nabi dalam Mendidik Anak dan Para Pemuda</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">44</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(70)">
-        <span class="toc-title">Makkiyyah-Madaniyyah: Rahasia Urutan Kurikulum <em>Nubuwwah</em></span>
-        <span class="toc-page">70</span>
+        <span class="toc-text">Makkiyyah-Madaniyyah: Rahasia Urutan Kurikulum <em>Nubuwwah</em></span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">70</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(89)">
-        <span class="toc-title">Menjadi Guru Seperti Rasulullah ﷺ</span>
-        <span class="toc-page">89</span>
+        <span class="toc-text">Menjadi Guru Seperti Rasulullah ﷺ</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">89</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(107)">
-        <span class="toc-title">Mengapa Harus Menghafal Al-Qur'an?</span>
-        <span class="toc-page">107</span>
+        <span class="toc-text">Mengapa Harus Menghafal Al-Qur'an?</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">107</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(113)">
-        <span class="toc-title">Menuju Generasi Qur'ani</span>
-        <span class="toc-page">113</span>
+        <span class="toc-text">Menuju Generasi Qur'ani</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">113</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(123)">
-        <span class="toc-title">Bagaimana Al-Qur'an Memprogram Hidup</span>
-        <span class="toc-page">123</span>
+        <span class="toc-text">Bagaimana Al-Qur'an Memprogram Hidup</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">123</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(128)">
-        <span class="toc-title">Perbaikan Bumi di Antara Angka Tiga</span>
-        <span class="toc-page">128</span>
+        <span class="toc-text">Perbaikan Bumi di Antara Angka Tiga</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">128</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(136)">
-        <span class="toc-title">Surah 'Al-Alaq</span>
-        <span class="toc-page">136</span>
+        <span class="toc-text">Surah 'Al-Alaq</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">136</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(144)">
-        <span class="toc-title">Berkisah dalam Al-Qur'an</span>
-        <span class="toc-page">144</span>
+        <span class="toc-text">Berkisah dalam Al-Qur'an</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">144</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(159)">
-        <span class="toc-title">Teknik Mengaplikasikan Kepribadian Qur'ani</span>
-        <span class="toc-page">159</span>
+        <span class="toc-text">Teknik Mengaplikasikan Kepribadian Qur'ani</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">159</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(165)">
-        <span class="toc-title">Sains Juz 30</span>
-        <span class="toc-page">165</span>
+        <span class="toc-text">Sains Juz 30</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">165</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(170)">
-        <span class="toc-title">Bahasa Peradaban Masa Depan, Bahasa Al-Qur'an</span>
-        <span class="toc-page">170</span>
+        <span class="toc-text">Bahasa Peradaban Masa Depan, Bahasa Al-Qur'an</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">170</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(177)">
-        <span class="toc-title">Landasan Membaca dan Menulis</span>
-        <span class="toc-page">177</span>
+        <span class="toc-text">Landasan Membaca dan Menulis</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">177</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(181)">
-        <span class="toc-title">Landasan Bahasa</span>
-        <span class="toc-page">181</span>
+        <span class="toc-text">Landasan Bahasa</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">181</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(185)">
-        <span class="toc-title">Landasan Berhitung</span>
-        <span class="toc-page">185</span>
+        <span class="toc-text">Landasan Berhitung</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">185</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(189)">
-        <span class="toc-title">Landasan Keterampilan Hidup</span>
-        <span class="toc-page">189</span>
+        <span class="toc-text">Landasan Keterampilan Hidup</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">189</span>
       </div>
       <div class="toc-item" onclick="app.goToPage(193)">
-        <span class="toc-title">Landasan Olahraga</span>
-        <span class="toc-page">193</span>
-      </div>
-      <div class="toc-item" onclick="app.goToPage(199)">
-        <span class="toc-title">MADRASAH</span>
-        <span class="toc-page">199</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(201)">
-        <span class="toc-title">Mukaddimah</span>
-        <span class="toc-page">201</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(203)">
-        <span class="toc-title">Seutas Tali</span>
-        <span class="toc-page">203</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(205)">
-        <span class="toc-title">Kelas Persiapan, Kuttab Mini</span>
-        <span class="toc-page">205</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(211)">
-        <span class="toc-title"><em>Al-Hafizh</em> di Madrasah Kami</span>
-        <span class="toc-page">211</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(216)">
-        <span class="toc-title">Madrasah Syafi'iyyah</span>
-        <span class="toc-page">216</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(225)">
-        <span class="toc-title">Kurikulum Hadits</span>
-        <span class="toc-page">225</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(240)">
-        <span class="toc-title">Kurikulum Mutun Ilmiyah</span>
-        <span class="toc-page">240</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(241)">
-        <span class="toc-title">Keseharian Nabi Untuk Keseharian Santri</span>
-        <span class="toc-page">241</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(250)">
-        <span class="toc-title">Kajian Ringan di Tahun Persiapan</span>
-        <span class="toc-page">250</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(254)">
-        <span class="toc-title">Keistimewaan Hari Jumat</span>
-        <span class="toc-page">254</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(264)">
-        <span class="toc-title">Contoh Khutbah Jumat Tematik</span>
-        <span class="toc-page">264</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(271)">
-        <span class="toc-title">Ilmu Wasail</span>
-        <span class="toc-page">271</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(274)">
-        <span class="toc-title">Bahasa Arab Bahasa Peradaban</span>
-        <span class="toc-page">274</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(280)">
-        <span class="toc-title">Akademis di Madrasah Al-Fatih</span>
-        <span class="toc-page">280</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(286)">
-        <span class="toc-title">Tarbiyah Jasadiyyah</span>
-        <span class="toc-page">286</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(289)">
-        <span class="toc-title">Santri-Santri yang Terlatih Mencari Nafkah dan Menafkahi</span>
-        <span class="toc-page">289</span>
-      </div>
-      <div class="toc-item toc-subitem" onclick="app.goToPage(296)">
-        <span class="toc-title">Kurikulum Parenting Nabawiyah</span>
-        <span class="toc-page">296</span>
+        <span class="toc-text">Landasan Olahraga</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">193</span>
       </div>
 
-      <button style="margin-top: 2rem;" onclick="app.openReader()">Buka Halaman Terakhir Dibaca</button>
+      <div class="toc-item section-header" onclick="app.goToPage(199)">
+        <span class="toc-text">MADRASAH</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">199</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(201)">
+        <span class="toc-text">Mukaddimah</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">201</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(203)">
+        <span class="toc-text">Seutas Tali</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">203</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(205)">
+        <span class="toc-text">Kelas Persiapan, Kuttab Mini</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">205</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(211)">
+        <span class="toc-text"><em>Al-Hafizh</em> di Madrasah Kami</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">211</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(216)">
+        <span class="toc-text">Madrasah Syafi'iyyah</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">216</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(225)">
+        <span class="toc-text">Kurikulum Hadits</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">225</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(240)">
+        <span class="toc-text">Kurikulum Mutun Ilmiyah</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">240</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(241)">
+        <span class="toc-text">Keseharian Nabi Untuk Keseharian Santri</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">241</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(250)">
+        <span class="toc-text">Kajian Ringan di Tahun Persiapan</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">250</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(254)">
+        <span class="toc-text">Keistimewaan Hari Jumat</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">254</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(264)">
+        <span class="toc-text">Contoh Khutbah Jumat Tematik</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">264</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(271)">
+        <span class="toc-text">Ilmu Wasail</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">271</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(274)">
+        <span class="toc-text">Bahasa Arab Bahasa Peradaban</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">274</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(280)">
+        <span class="toc-text">Akademis di Madrasah Al-Fatih</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">280</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(286)">
+        <span class="toc-text">Tarbiyah Jasadiyyah</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">286</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(289)">
+        <span class="toc-text">Santri-Santri yang Terlatih Mencari Nafkah dan Menafkahi</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">289</span>
+      </div>
+      <div class="toc-item sub-item" onclick="app.goToPage(296)">
+        <span class="toc-text">Kurikulum Parenting Nabawiyah</span>
+        <div class="toc-dots"></div>
+        <span class="toc-num">296</span>
+      </div>
     </div>
-    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+
+    <div class="sticky-cta-wrapper">
+      <button class="sticky-cta-btn" onclick="app.openReader()">
+        <span>📖</span> Lanjut Baca Halaman Terakhir
+      </button>
+    </div>
+
+    <footer>
+      Crafted with <span>♥</span> by Kurniapedia 2026
+    </footer>
   </div>
 
   <!-- 4. READER SCREEN -->
   <div id="reader-screen" class="screen">
-    <header class="reader-header">
-      <h3 id="watermark-title">Reader - Kurniapedia</h3>
-      <div class="toolbar">
-        <button onclick="app.prevPage()">◀ Prev</button>
-        <span>Hal <input type="number" id="page-num" style="width: 50px; text-align: center;" value="1"> / <span id="page-count">0</span></span>
-        <button onclick="app.nextPage()">Next ▶</button>
-        <button onclick="app.zoomIn()">Zoom +</button>
-        <button onclick="app.zoomOut()">Zoom -</button>
-        <button onclick="app.saveBookmark()">Simpan Hal</button>
-        <button onclick="app.toggleFullscreen()">Full Screen</button>
-        <button onclick="app.showToc()">Daftar Isi</button>
+    <div class="reader-top-bar">
+      <div class="reader-title-box">
+        <button class="tool-btn" onclick="app.showToc()">☰ Daftar Isi</button>
+        <h4 id="reader-user-mark">Halaman Baca</h4>
       </div>
-    </header>
 
-    <div id="pdf-viewer-container">
-      <canvas id="pdf-canvas"></canvas>
+      <div class="reader-controls-toolbar">
+        <button class="tool-btn" onclick="app.prevPage()" title="Sebelumnya">❮</button>
+
+        <div class="page-input-box">
+          <input type="number" id="page-num" value="1" min="1">
+          <span>/ <span id="page-count">0</span></span>
+        </div>
+
+        <button class="tool-btn" onclick="app.nextPage()" title="Berikutnya">❯</button>
+        <button class="tool-btn" onclick="app.zoomOut()" title="Zoom Out">−</button>
+        <button class="tool-btn" onclick="app.zoomIn()" title="Zoom In">＋</button>
+        <button class="tool-btn" onclick="app.saveBookmark()" title="Simpan Bookmark">🔖</button>
+        <button class="tool-btn" onclick="app.toggleFullscreen()" title="Full Screen">⛶</button>
+        <button class="tool-btn" onclick="app.toggleTheme()" title="Ganti Tema"><span class="theme-icon">🌙</span></button>
+      </div>
     </div>
-    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+
+    <div id="pdf-viewer-container" class="pdf-main-container">
+      <div class="pdf-paper-shadow">
+        <canvas id="pdf-canvas"></canvas>
+      </div>
+    </div>
+
+    <footer>
+      Crafted with <span>♥</span> by Kurniapedia 2026
+    </footer>
   </div>
 
-  <!-- JAVASCRIPT & SERVICE WORKER INLINE -->
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -439,36 +948,49 @@
 
     const app = {
       init: function() {
-        // Anti Klik Kanan & Shortcut Download
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-          if ((e.ctrlKey && ['s','p','u'].includes(e.key)) || e.key === 'F12') {
-            e.preventDefault();
-            alert("Fitur ini dinonaktifkan untuk keamanan dokumen.");
-          }
-        });
+        this.setupSecurity();
+        this.setupEventListeners();
+        this.applySavedTheme();
+        this.registerServiceWorker();
 
-        // Splash screen 1.5 detik
+        // Splash screen 1.8 detik
         setTimeout(() => {
           const user = localStorage.getItem('is_logged_in');
           if (user) {
-            document.getElementById('watermark-title').textContent = `Reader - ${user}`;
+            document.getElementById('user-welcome').textContent = `Selamat datang, ${user}`;
+            document.getElementById('reader-user-mark').textContent = `Reader - ${user}`;
             this.showScreen('toc-screen');
           } else {
             this.showScreen('login-screen');
           }
-        }, 1500);
+        }, 1800);
+      },
 
-        // Form Login
+      setupSecurity: function() {
+        // Anti Klik Kanan
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        // Anti Shortcut Download / Inspect Element
+        document.addEventListener('keydown', e => {
+          if ((e.ctrlKey && ['s','p','u','i','j'].includes(e.key.toLowerCase())) || e.key === 'F12') {
+            e.preventDefault();
+            this.showToast("Fitur proteksi aktif. Dokumen terlindungi.");
+          }
+        });
+      },
+
+      setupEventListeners: function() {
+        // Form Login Submit
         document.getElementById('login-form').addEventListener('submit', (e) => {
           e.preventDefault();
           const name = document.getElementById('username').value;
           localStorage.setItem('is_logged_in', name);
-          document.getElementById('watermark-title').textContent = `Reader - ${name}`;
+          document.getElementById('user-welcome').textContent = `Selamat datang, ${name}`;
+          document.getElementById('reader-user-mark').textContent = `Reader - ${name}`;
           this.showScreen('toc-screen');
         });
 
-        // Jump Page Manual
+        // Jump Page Direct Input
         document.getElementById('page-num').addEventListener('change', (e) => {
           let num = parseInt(e.target.value);
           if (pdfDoc && num >= 1 && num <= pdfDoc.numPages) {
@@ -477,46 +999,57 @@
           }
         });
 
-        // Swipe Mobile Support
+        // Touch Gesture Swipe
         let startX = 0;
         const container = document.getElementById('pdf-viewer-container');
-        container.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
+        container.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX, {passive: true});
         container.addEventListener('touchend', e => {
           let endX = e.changedTouches[0].screenX;
-          if (endX < startX - 50) this.nextPage();
-          if (endX > startX + 50) this.prevPage();
-        });
+          if (endX < startX - 60) this.nextPage();
+          if (endX > startX + 60) this.prevPage();
+        }, {passive: true});
+      },
 
-        // Register Inline Service Worker untuk PWA Offline
-        if ('serviceWorker' in navigator) {
-          const swCode = `
-            const CACHE_NAME = 'kurniapedia-pwa-v1';
-            self.addEventListener('install', e => {
-              e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['/', '/index.html', '/buku.enc'])));
-            });
-            self.addEventListener('fetch', e => {
-              e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-            });
-          `;
-          const blob = new Blob([swCode], { type: 'application/javascript' });
-          navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW error:', err));
-        }
+      applySavedTheme: function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        this.updateThemeIcons(savedTheme);
+      },
+
+      toggleTheme: function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        this.updateThemeIcons(newTheme);
+      },
+
+      updateThemeIcons: function(theme) {
+        document.querySelectorAll('.theme-icon').forEach(icon => {
+          icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        });
+      },
+
+      togglePasswordVisibility: function() {
+        const passwordInput = document.getElementById('password');
+        passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
       },
 
       showScreen: function(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        const targetScreen = document.getElementById(id);
+        targetScreen.classList.add('active');
         if (id === 'reader-screen' && !pdfDoc) this.loadAndDecryptPDF();
       },
 
       openReader: function() { this.showScreen('reader-screen'); },
       showToc: function() { this.showScreen('toc-screen'); },
 
-      // Dekripsi Teraman di RAM Browser menggunakan Web Crypto API
+      // Web Crypto API Decryption (AES-CBC + PBKDF2)
       loadAndDecryptPDF: async function() {
         try {
           const response = await fetch('buku.enc');
-          if (!response.ok) throw new Error("File dokumen tidak ditemukan.");
+          if (!response.ok) throw new Error("File dokumen buku.enc tidak ditemukan.");
           const encryptedBuffer = await response.arrayBuffer();
 
           const iv = encryptedBuffer.slice(0, 16);
@@ -543,12 +1076,12 @@
             document.getElementById('page-count').textContent = pdfDoc.numPages;
             this.renderPage(pageNum);
           }).catch(err => {
-            alert("Gagal mendekripsi format file.");
+            this.showToast("Gagal mendekripsi berkas dokumen.");
             console.error(err);
           });
 
         } catch (err) {
-          alert("Gagal memuat dokumen. Pastikan file buku.enc ada di repositori Anda.");
+          this.showToast("Error memuat file buku.enc.");
           console.error(err);
         }
       },
@@ -560,7 +1093,12 @@
           canvas.height = viewport.height;
           canvas.width = viewport.width;
 
-          page.render({ canvasContext: ctx, viewport: viewport }).promise.then(() => {
+          let renderContext = {
+            canvasContext: ctx,
+            viewport: viewport
+          };
+
+          page.render(renderContext).promise.then(() => {
             pageRendering = false;
             if (pageNumPending !== null) {
               this.renderPage(pageNumPending);
@@ -576,18 +1114,79 @@
         else this.renderPage(num);
       },
 
-      prevPage: function() { if (pageNum > 1) { pageNum--; this.queueRenderPage(pageNum); } },
-      nextPage: function() { if (pdfDoc && pageNum < pdfDoc.numPages) { pageNum++; this.queueRenderPage(pageNum); } },
-      goToPage: function(num) { pageNum = num; this.openReader(); if (pdfDoc) this.queueRenderPage(pageNum); },
-      zoomIn: function() { scale += 0.2; this.queueRenderPage(pageNum); },
-      zoomOut: function() { if (scale > 0.6) { scale -= 0.2; this.queueRenderPage(pageNum); } },
+      prevPage: function() {
+        if (pageNum > 1) {
+          pageNum--;
+          this.queueRenderPage(pageNum);
+        }
+      },
+
+      nextPage: function() {
+        if (pdfDoc && pageNum < pdfDoc.numPages) {
+          pageNum++;
+          this.queueRenderPage(pageNum);
+        }
+      },
+
+      goToPage: function(num) {
+        pageNum = num;
+        this.openReader();
+        if (pdfDoc) this.queueRenderPage(pageNum);
+      },
+
+      zoomIn: function() {
+        scale += 0.2;
+        this.queueRenderPage(pageNum);
+      },
+
+      zoomOut: function() {
+        if (scale > 0.6) {
+          scale -= 0.2;
+          this.queueRenderPage(pageNum);
+        }
+      },
+
       saveBookmark: function() {
         localStorage.setItem('saved_page', pageNum);
-        alert(`Halaman ${pageNum} berhasil disimpan!`);
+        this.showToast(`Halaman ${pageNum} disimpan!`);
       },
+
       toggleFullscreen: function() {
-        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-        else if (document.exitFullscreen) document.exitFullscreen();
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => console.log(err));
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      },
+
+      showToast: function(msg) {
+        let toast = document.createElement('div');
+        toast.style.cssText = `
+          position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+          background: rgba(15, 23, 42, 0.9); color: white; padding: 10px 20px;
+          border-radius: 20px; border: 1px solid var(--primary); font-size: 0.85rem;
+          font-weight: 600; z-index: 9999; backdrop-filter: blur(10px);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: opacity 0.3s;
+        `;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
+      },
+
+      registerServiceWorker: function() {
+        if ('serviceWorker' in navigator) {
+          const swCode = `
+            const CACHE_NAME = 'kurniapedia-pwa-v2';
+            self.addEventListener('install', e => {
+              e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['/', '/index.html', '/buku.enc'])));
+            });
+            self.addEventListener('fetch', e => {
+              e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+            });
+          `;
+          const blob = new Blob([swCode], { type: 'application/javascript' });
+          navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW error:', err));
+        }
       }
     };
 
