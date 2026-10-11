@@ -444,10 +444,13 @@
       border-radius: 12px;
       padding: 1rem;
       margin-bottom: 1.5rem;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--shadow-md);
+    }
+    .install-banner.show {
+      display: flex;
     }
 
     /* BOOKMARKS & NOTES ITEM STYLE */
@@ -489,7 +492,7 @@
       border-color: var(--primary);
     }
 
-    /* 4. READER SCREEN - PORTRAIT PRECISION FIX */
+    /* 4. READER SCREEN */
     #reader-screen {
       background: var(--bg-canvas);
     }
@@ -672,11 +675,11 @@
     </div>
 
     <div class="toc-content">
-      <!-- Tombol Install PWA untuk HP & Laptop -->
+      <!-- Tombol Install PWA Instan -->
       <div id="install-banner" class="install-banner">
         <div>
           <strong style="display: block; font-size: 0.95rem;">Install Modul Al Fatih</strong>
-          <span style="font-size: 0.8rem; opacity: 0.9;">Akses lebih cepat & baca offline di HP atau Laptop Anda.</span>
+          <span style="font-size: 0.8rem; opacity: 0.9;">Pasang sebagai aplikasi di perangkat Anda.</span>
         </div>
         <button class="btn" style="background: white; color: var(--primary); padding: 0.5rem 1rem;" onclick="app.installApp()">Install</button>
       </div>
@@ -778,6 +781,8 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
+      const banner = document.getElementById('install-banner');
+      if (banner) banner.classList.add('show');
     });
 
     const TOC_DATA = [
@@ -882,7 +887,7 @@
           }
         });
 
-        // PINCH-TO-ZOOM OPTIMAL UNTUK PORTRAIT & LANDSCAPE
+        // PINCH-TO-ZOOM OPTIMAL
         let initialDistance = null;
         let startX = 0;
         const container = document.getElementById('pdf-viewer-container');
@@ -925,7 +930,7 @@
 
         if ('serviceWorker' in navigator) {
           const swCode = `
-            const CACHE = 'kurniapedia-pwa-v8';
+            const CACHE = 'kurniapedia-pwa-v9';
             self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/', '/index.html', '/buku.enc']))));
             self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
           `;
@@ -936,13 +941,13 @@
 
       installApp: async function() {
         if (!deferredPrompt) {
-          alert("Gunakan menu browser (ikon titik tiga di kanan atas Chrome atau tombol Share di Safari) lalu pilih 'Add to Home Screen' atau 'Install App'.");
+          alert("Pemasangan otomatis belum siap atau aplikasi sudah terpasang di perangkat Anda.");
           return;
         }
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') {
-          document.getElementById('install-banner').style.display = 'none';
+          document.getElementById('install-banner').classList.remove('show');
         }
         deferredPrompt = null;
       },
@@ -1069,7 +1074,6 @@
         this.queueRenderPage(pageNum);
       },
 
-      // SIMPAN LANGSUNG KE HALAMAN TERSIMPAN & CATATAN
       saveBookmarkDirect: function() {
         localStorage.setItem('saved_page', pageNum);
         let bookmarks = JSON.parse(localStorage.getItem('kurniapedia_notes') || '{}');
