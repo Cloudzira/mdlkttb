@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kurniapedia Secure Reader</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+
+  <!-- SPLASH -->
+  <div id="splash-screen" class="screen active">
+    <h1>Kurniapedia Reader</h1>
+    <p>Menyiapkan sistem aman...</p>
+    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="login-screen" class="screen">
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+      <div class="auth-container">
+        <h2>Silakan Masuk</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label>Nama / Email</label>
+            <input type="text" id="username" required placeholder="Masukkan nama...">
+          </div>
+          <button type="submit">Masuk</button>
+        </form>
+      </div>
+    </div>
+    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+  </div>
+
+  <!-- DAFTAR ISI -->
+  <div id="toc-screen" class="screen">
+    <div style="flex: 1; padding: 2rem; max-width: 600px; margin: 0 auto; width: 100%;">
+      <h2>Daftar Isi & Navigasi</h2>
+      <ul class="toc-list">
+        <li onclick="app.goToPage(1)">Bab 1: Pendahuluan (Halaman 1)</li>
+        <li onclick="app.goToPage(5)">Bab 2: Pembahasan Utama (Halaman 5)</li>
+        <li onclick="app.goToPage(10)">Bab 3: Kesimpulan (Halaman 10)</li>
+      </ul>
+      <button style="margin-top: 2rem;" onclick="app.openReader()">Buka Halaman Terakhir</button>
+    </div>
+    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+  </div>
+
+  <!-- READER -->
+  <div id="reader-screen" class="screen">
+    <header class="reader-header">
+      <h3 id="watermark-title">Secure Viewer</h3>
+      <div class="toolbar">
+        <button onclick="app.prevPage()">◀ Prev</button>
+        <span>Hal <input type="number" id="page-num" style="width: 50px; text-align: center;" value="1"> / <span id="page-count">0</span></span>
+        <button onclick="app.nextPage()">Next ▶</button>
+        <button onclick="app.zoomIn()">Zoom +</button>
+        <button onclick="app.zoomOut()">Zoom -</button>
+        <button onclick="app.saveBookmark()">Simpan Hal</button>
+        <button onclick="app.toggleFullscreen()">Full Screen</button>
+        <button onclick="app.showToc()">Daftar Isi</button>
+      </div>
+    </header>
+    <div id="pdf-viewer-container">
+      <canvas id="pdf-canvas"></canvas>
+    </div>
+    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
