@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Modul Al Fatih Reader",
+  "short_name": "Al Fatih",
+  "description": "Modul Kuttab dan Madrasah Al Fatih",
+  "lang": "id",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e0a05",
+  "theme_color": "#0e0a05",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

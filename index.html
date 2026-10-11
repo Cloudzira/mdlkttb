@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Modul Al Fatih | Kurniapedia</title>
+  <title>Modul Al Fatih Reader</title>
   <meta name="description" content="Modul Kuttab dan Madrasah Al Fatih">
   <meta name="theme-color" content="#0e0a05" id="meta-theme-color">
 
@@ -27,15 +27,17 @@
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 
-  <!-- PDF.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- PDF.js dimuat belakangan oleh JavaScript agar halaman tidak tertahan -->
 
   <!-- Logo aplikasi (disematkan langsung, tanpa file tambahan) -->
   <link rel="icon" type="image/png" href="data:image/png;base64,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">
 
-  <!-- Meta tag PWA (manifest dibuat otomatis oleh JavaScript di bawah) -->
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -238,12 +240,13 @@
     .splash-logo {
       height: 140px;
       margin-bottom: 1.5rem;
+      filter: drop-shadow(0 0 18px rgba(216, 172, 78, 0.55));
       animation: logoGlow 2.4s infinite ease-in-out;
     }
 
     @keyframes logoGlow {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(216, 172, 78, 0.35)); }
-      50% { transform: scale(1.05); filter: drop-shadow(0 0 24px rgba(216, 172, 78, 0.75)); }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
     .splash-title {
@@ -886,24 +889,24 @@
     <div class="auth-card">
       <div class="auth-header">
         <img class="app-logo auth-logo-img" alt="Logo Al Fatih">
-        <h2>MODUL AL FATIH</h2>
-        <p>Masukkan identitas dan kode akses</p>
+        <h2>Silakan Masuk</h2>
+        <p>Masukkan identitas dan kata sandi akses</p>
       </div>
 
       <form id="login-form" autocomplete="on" novalidate>
         <div class="form-group">
-          <label for="username">Nama</label>
+          <label for="username">Email / Username</label>
           <div class="input-wrapper">
             <svg class="icon input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <input type="text" id="username" name="username" placeholder="Masukkan Nama.." autocomplete="username" autocapitalize="none" required>
+            <input type="text" id="username" name="username" placeholder="Nama Anda..." autocomplete="username" autocapitalize="none" required>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="password">Kode</label>
+          <label for="password">Kata Sandi</label>
           <div class="input-wrapper">
             <svg class="icon input-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <input type="password" id="password" name="password" placeholder="Masukkan Kode.." autocomplete="current-password" required>
+            <input type="password" id="password" name="password" placeholder="Kata sandi..." autocomplete="current-password" required>
             <button type="button" class="toggle-pwd" id="toggle-pwd" onclick="app.togglePassword()" aria-label="Tampilkan atau sembunyikan kata sandi">
               <svg class="icon" id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </button>
@@ -1089,21 +1092,18 @@
         <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
       <img class="app-logo about-logo" alt="Logo Al Fatih">
-      <h3 id="about-title">Modul Al Fatih</h3>
+      <h3 id="about-title">Modul Al Fatih Reader</h3>
       <div class="about-version">Versi <span id="about-version"></span></div>
-      <p class="about-desc">Aplikasi digital Modul Kuttab dan Madrasah Al Fatih. Dibuat agar modul lebih mudah dibaca, dicatat, dan dipelajari. Semoga bermanfaat dan membawa banyak keberkahan</p>
-       <ul class="about-features">
+      <p class="about-desc">Aplikasi pembaca digital Modul Kuttab dan Madrasah Al Fatih. Dibuat agar modul mudah dibaca, dicatat, dan dipelajari kapan saja, di HP maupun laptop.</p>
+      <ul class="about-features">
         <li>Daftar isi dengan pencarian bab</li>
-        <li>Lanjut membaca halaman terakhir</li>
+        <li>Lanjut baca otomatis dari halaman terakhir</li>
         <li>Penanda halaman dan catatan pribadi</li>
         <li>Mode tema gelap, terang, dan baca malam</li>
-        <li>Bisa di install dan dibaca offline</li>
+        <li>Bisa dipasang sebagai aplikasi dan dibaca offline</li>
       </ul>
-      <p class="about-desc">Hak Cipta dilindungi Undang-undang</p>
-      <p class="about-desc">Dilarang mereproduksi atau memperbanyak seluruh atau sebagian dari buku ini dalam bentuk apapun tanpa izin tertulis dari penerbit</p>
-      <p class="about-desc">All Rights Reserved</p>
       <div class="about-divider"></div>
-      <div class="about-label">MEDIA SOSIAL</div>
+      <div class="about-label">Ikuti Kami</div>
       <div class="socials" id="about-socials"></div>
       <div class="about-footer">Crafted with ♥ by Kurniapedia 2026</div>
       <button class="btn" id="about-ok" type="button">Tutup</button>
@@ -1136,8 +1136,21 @@
 
   <!-- JAVASCRIPT & APP LOGIC -->
   <script>
-    if (typeof pdfjsLib !== 'undefined') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    // pdf.js dimuat saat dibutuhkan (bukan di awal) supaya aplikasi langsung tampil walau sinyal lambat
+    const PDFJS_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+    let pdfJsPromise = null;
+    function ensurePdfJs() {
+      if (typeof pdfjsLib !== 'undefined') return Promise.resolve();
+      if (pdfJsPromise) return pdfJsPromise;
+      pdfJsPromise = new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = PDFJS_BASE + 'pdf.min.js';
+        s.async = true;
+        s.onload = () => { pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'pdf.worker.min.js'; resolve(); };
+        s.onerror = () => { pdfJsPromise = null; s.remove(); reject(new Error('NO_PDFJS')); };
+        document.head.appendChild(s);
+      });
+      return pdfJsPromise;
     }
 
     // ===== PENGATURAN (silakan ubah di sini) =====
@@ -1147,7 +1160,7 @@
     const MAX_PAGE_WIDTH = 900;            // lebar maksimum halaman di layar besar (px)
     const ZOOM_MIN = 0.5, ZOOM_MAX = 4;
     const NOTE_PLACEHOLDER_OLD = 'Tulis poin catatan penting di sini...';
-    const APP_VERSION = '1.0.0';
+    const APP_VERSION = '2.0.0';
 
     // ===== MEDIA SOSIAL =====
     // Untuk mengganti akun: ubah isi 'url'. Untuk menghapus ikon: hapus barisnya.
@@ -1233,57 +1246,7 @@
     const ctx = canvas.getContext('2d');
     const viewer = $('pdf-viewer-container');
 
-    // ===== PWA: manifest dibuat otomatis (tanpa file tambahan) =====
-    function buildIcon(size, img) {
-      const c = document.createElement('canvas');
-      c.width = c.height = size;
-      const g = c.getContext('2d');
-      const bg = g.createRadialGradient(size / 2, size / 2, size * 0.1, size / 2, size / 2, size * 0.75);
-      bg.addColorStop(0, '#1c140a');
-      bg.addColorStop(1, '#070503');
-      g.fillStyle = bg;
-      g.fillRect(0, 0, size, size);
-      const h = size * 0.6;
-      const w = h * (img.naturalWidth / img.naturalHeight);
-      g.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
-      return c.toDataURL('image/png');
-    }
-
-    function setupManifest() {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const base = location.href.split('#')[0].split('?')[0];
-          const icon192 = buildIcon(192, img), icon512 = buildIcon(512, img);
-          const manifest = {
-            name: 'Modul Al Fatih',
-            short_name: 'Modul Al Fatih',
-            description: 'Modul Kuttab dan Madrasah Al Fatih',
-            start_url: base,
-            scope: base.substring(0, base.lastIndexOf('/') + 1),
-            display: 'standalone',
-            background_color: '#0e0a05',
-            theme_color: '#0e0a05',
-            icons: [
-              { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-              { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
-            ]
-          };
-          const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-          const link = document.createElement('link');
-          link.rel = 'manifest';
-          link.href = URL.createObjectURL(blob);
-          document.head.appendChild(link);
-
-          const touch = document.createElement('link');
-          touch.rel = 'apple-touch-icon';
-          touch.href = icon192;
-          document.head.appendChild(touch);
-        } catch (e) { console.warn('Manifest gagal dibuat:', e); }
-      };
-      img.src = window.LOGO_DATA;
-    }
-    setupManifest();
+    // PWA: manifest memakai file manifest.json + icon-192.png / icon-512.png (satu folder dengan index.html)
 
     const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
@@ -1309,12 +1272,16 @@
     const app = {
       // ---------- INIT ----------
       init() {
-        this.applyThemeIcon();
-        this.applyNight();
-        this.renderSocials();
-        this.renderTocItems();
-        this.renderBookmarks();
-        this.updateProgressCard();
+        // Splash SELALU berakhir, walaupun ada bagian lain yang error
+        setTimeout(() => this.afterSplash(), 1600);
+
+        const safe = (fn) => { try { fn(); } catch (e) { console.error(e); } };
+        safe(() => this.applyThemeIcon());
+        safe(() => this.applyNight());
+        safe(() => this.renderSocials());
+        safe(() => this.renderTocItems());
+        safe(() => this.renderBookmarks());
+        safe(() => this.updateProgressCard());
 
         // Proteksi dasar (hanya penghalang ringan)
         document.addEventListener('contextmenu', e => e.preventDefault());
@@ -1325,16 +1292,6 @@
           const s = e.state && e.state.screen;
           if (s) this.showScreen(s, { push: false });
         });
-
-        // Splash -> login/daftar isi
-        setTimeout(() => {
-          if (this.isLoggedIn()) {
-            $('splash-screen').classList.remove('active');
-            this.showScreen('toc-screen', { push: false, replace: true });
-          } else {
-            this.showScreen('login-screen', { push: false });
-          }
-        }, 1600);
 
         // Login
         $('login-form').addEventListener('submit', (e) => this.handleLogin(e));
@@ -1377,6 +1334,21 @@
         if (isIOS() && !isStandalone()) {
           $('install-text').textContent = 'Ketuk tombol Bagikan lalu pilih "Tambah ke Layar Utama".';
           $('install-banner').classList.add('show');
+        }
+      },
+
+      afterSplash() {
+        try {
+          if (this.isLoggedIn()) {
+            $('splash-screen').classList.remove('active');
+            this.showScreen('toc-screen', { push: false, replace: true });
+          } else {
+            this.showScreen('login-screen', { push: false });
+          }
+        } catch (e) {
+          console.error(e);
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          $('login-screen').classList.add('active');
         }
       },
 
@@ -1563,7 +1535,10 @@
         if (id === 'toc-screen') {
           this.updateProgressCard();
           this.renderTocItems($('toc-search').value);
-          setTimeout(() => this.preloadPDF(), 600);
+          setTimeout(() => {
+            const run = () => this.preloadPDF();
+            if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 4000 }); else run();
+          }, 2500);
         }
         if (id === 'bookmarks-screen') this.renderBookmarks();
         if (id === 'reader-screen') this.enterReader();
@@ -1679,14 +1654,15 @@
         if (pdfPromise) return pdfPromise;
 
         pdfPromise = (async () => {
-          if (typeof pdfjsLib === 'undefined') throw new Error('NO_PDFJS');
+          this.setOverlay('loading', 'Menyiapkan pembaca...', '', null);
+          await ensurePdfJs();
 
           this.setOverlay('loading', 'Mengunduh dokumen...', 'Mohon tunggu, proses pertama kali bisa agak lama.', 0);
           const encryptedBuffer = await this.fetchBook((p) => this.setOverlay('loading', `Mengunduh dokumen... ${Math.round(p * 100)}%`, 'Mohon tunggu, proses pertama kali bisa agak lama.', p));
 
           this.setOverlay('loading', 'Membuka dokumen aman...', 'Sedang mendekripsi isi buku.', 1);
-          const iv = encryptedBuffer.slice(0, 16);
-          const dataCipher = encryptedBuffer.slice(16);
+          const iv = new Uint8Array(encryptedBuffer, 0, 16);
+          const dataCipher = new Uint8Array(encryptedBuffer, 16);
 
           const passphrase = "KurniapediaSecretPass2026";
           const enc = new TextEncoder();
@@ -1721,6 +1697,7 @@
       preloadPDF() {
         if (pdfDoc || pdfPromise || !this.isLoggedIn()) return;
         if (navigator.connection && navigator.connection.saveData) return;
+        if (navigator.deviceMemory && navigator.deviceMemory < 4) return; // HP RAM kecil: jangan muat di latar belakang
         this.loadPDF().then(() => this.updateProgressCard()).catch(() => {});
       },
 
