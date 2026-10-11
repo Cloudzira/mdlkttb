@@ -703,30 +703,35 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      padding: 0 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      min-width: 86px;
+      gap: 6px;
+      padding: 0 4px;
+      font-size: 0.95rem;
+      font-weight: 700;
       color: var(--text-muted);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
     .page-indicator input {
-      width: 44px;
+      width: 54px;
+      height: 38px;
       border: 1px solid var(--border-color);
       background: var(--bg-card);
       color: var(--text-main);
       text-align: center;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 16px;
       outline: none;
-      padding: 4px 0;
-      border-radius: 8px;
+      padding: 0;
+      border-radius: 10px;
+      font-variant-numeric: tabular-nums;
       -moz-appearance: textfield;
     }
     .page-indicator input::-webkit-outer-spin-button,
     .page-indicator input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .page-indicator input:focus { border-color: var(--primary); }
+    .page-indicator input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .page-indicator .pi-sep { opacity: 0.55; }
+    .page-indicator .pi-total { min-width: 3ch; text-align: left; }
 
     .reader-nav .sep { width: 1px; height: 22px; background: var(--border-color); margin: 0 2px; }
 
@@ -778,7 +783,7 @@
     #toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
     #toast button { background: none; border: none; color: #e6bf68; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
 
-    #modal {
+    #modal, #note-modal {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.55);
@@ -790,7 +795,10 @@
       padding: 1.5rem;
       z-index: 120;
     }
-    #modal.show { display: flex; }
+    #modal.show, #note-modal.show { display: flex; }
+    .note-box { max-width: 420px; }
+    .note-chapter { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.9rem; line-height: 1.4; }
+    .note-delete { display: block; margin: 0.9rem auto 0; background: none; border: none; color: var(--danger); font-weight: 600; font-size: 0.8rem; cursor: pointer; padding: 6px 10px; }
     .modal-box {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -886,7 +894,7 @@
         <button class="btn-icon theme-toggle" onclick="app.toggleTheme()" title="Ganti Tema" aria-label="Ganti tema">
           <svg class="icon theme-icon" viewBox="0 0 24 24"></svg>
         </button>
-        <button class="btn-icon danger" onclick="app.logout()" title="Keluar (Logout)" aria-label="Keluar">
+        <button class="btn-icon" onclick="app.logout()" title="Keluar (Logout)" aria-label="Keluar">
           <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
         </button>
       </div>
@@ -971,7 +979,7 @@
         <button class="btn-icon" id="btn-night" onclick="app.toggleNight()" title="Mode baca malam" aria-label="Mode baca malam">
           <svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
-        <button class="btn-icon" id="btn-bookmark" onclick="app.toggleBookmark()" title="Tandai halaman ini" aria-label="Tandai halaman">
+        <button class="btn-icon" id="btn-bookmark" onclick="app.toggleBookmark()" title="Simpan halaman & catatan" aria-label="Simpan halaman dan catatan">
           <svg class="icon" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
         </button>
       </div>
@@ -1008,7 +1016,7 @@
       </button>
       <div class="page-indicator">
         <input type="number" inputmode="numeric" id="page-num" value="1" min="1" aria-label="Nomor halaman">
-        <span>/ <span id="page-count">0</span></span>
+        <span class="pi-sep">/</span><span class="pi-total" id="page-count">0</span>
       </div>
       <button class="btn-icon" id="btn-next" onclick="app.nextPage()" title="Halaman berikutnya" aria-label="Halaman berikutnya">
         <svg class="icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1024,6 +1032,19 @@
 
   <!-- TOAST & MODAL -->
   <div id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button id="toast-action" style="display:none;"></button></div>
+
+  <div id="note-modal" role="dialog" aria-modal="true" aria-labelledby="note-title">
+    <div class="modal-box note-box">
+      <h3 id="note-title">Simpan Halaman</h3>
+      <div class="note-chapter" id="note-chapter"></div>
+      <textarea id="note-text" class="bm-textarea" rows="5" placeholder="Tulis catatan atau poin penting untuk halaman ini..." aria-label="Catatan halaman"></textarea>
+      <div class="modal-actions" style="margin-top: 1rem;">
+        <button class="btn btn-secondary" id="note-cancel" type="button">Batal</button>
+        <button class="btn" id="note-save" type="button">Simpan</button>
+      </div>
+      <button class="note-delete" id="note-delete" type="button" style="display:none;">Hapus penanda</button>
+    </div>
+  </div>
 
   <div id="modal" role="dialog" aria-modal="true">
     <div class="modal-box">
@@ -1255,7 +1276,7 @@
         window.addEventListener('resize', () => {
           clearTimeout(resizeTimer);
           resizeTimer = setTimeout(() => {
-            if (pdfDoc && $('reader-screen').classList.contains('active')) this.renderPage(pageNum);
+            if (pdfDoc && $('reader-screen').classList.contains('active')) this.renderPage(pageNum, this.captureAnchor());
           }, 250);
         });
 
@@ -1315,7 +1336,7 @@
       },
 
       async logout() {
-        const ok = await this.confirm('Keluar dari aplikasi?', 'Anda perlu memasukkan kata sandi lagi untuk membuka modul. Catatan Anda tetap tersimpan.', 'Keluar');
+        const ok = await this.confirm('Keluar dari aplikasi?', 'Anda perlu memasukkan kata sandi lagi untuk membuka modul. Catatan Anda tetap tersimpan.', 'Keluar', false);
         if (!ok) return;
         store.remove('is_logged_in');
         $('username').value = '';
@@ -1383,12 +1404,13 @@
         toastTimer = setTimeout(() => t.classList.remove('show'), opts.duration || 2600);
       },
 
-      confirm(title, text, okLabel = 'Ya') {
+      confirm(title, text, okLabel = 'Ya', danger = true) {
         return new Promise(resolve => {
           const modal = $('modal');
           $('modal-title').textContent = title;
           $('modal-text').textContent = text;
           $('modal-ok').textContent = okLabel;
+          $('modal-ok').className = danger ? 'btn btn-danger' : 'btn';
           modal.classList.add('show');
           const close = (val) => {
             modal.classList.remove('show');
@@ -1612,7 +1634,7 @@
       },
 
       // ---------- RENDER HALAMAN ----------
-      async renderPage(num) {
+      async renderPage(num, anchor) {
         if (!pdfDoc) return;
         num = clamp(num, 1, pdfDoc.numPages);
         pageNum = num;
@@ -1658,8 +1680,11 @@
           canvas.style.width = cssW + 'px';
           canvas.style.height = cssH + 'px';
           canvas.style.transform = '';
+          canvas.style.transformOrigin = '';
           canvas.classList.remove('loading');
           renderTask = null;
+          // Halaman baru: rata tengah & mulai dari atas. Zoom/rotasi: pertahankan titik tengah.
+          this.restoreAnchor(anchor || { fx: 0.5, fy: null });
         } catch (err) {
           if (err && err.name === 'RenderingCancelledException') return;
           console.error(err);
@@ -1711,13 +1736,34 @@
       },
 
       // ---------- ZOOM ----------
-      setZoom(z, silent) {
+      // Titik tengah layar pada halaman (pecahan 0..1), dipakai agar zoom selalu berpusat di tengah
+      captureAnchor() {
+        const vr = viewer.getBoundingClientRect();
+        const cr = canvas.getBoundingClientRect();
+        if (!cr.width || !cr.height) return null;
+        return {
+          fx: ((vr.left + vr.width / 2) - cr.left) / cr.width,
+          fy: ((vr.top + vr.height / 2) - cr.top) / cr.height
+        };
+      },
+
+      restoreAnchor(a) {
+        const vr = viewer.getBoundingClientRect();
+        const cr = canvas.getBoundingClientRect();
+        if (!a) return;
+        viewer.scrollLeft += (cr.left + a.fx * cr.width) - (vr.left + vr.width / 2);
+        if (a.fy === null) viewer.scrollTop = 0;
+        else viewer.scrollTop += (cr.top + a.fy * cr.height) - (vr.top + vr.height / 2);
+      },
+
+      setZoom(z, silent, anchor) {
         const next = clamp(Math.round(z * 100) / 100, ZOOM_MIN, ZOOM_MAX);
         if (next === zoom) return;
+        const a = anchor || this.captureAnchor();
         zoom = next;
         store.set('reader_zoom', zoom);
         if (!silent) this.toast(`Zoom ${Math.round(zoom * 100)}%`, { duration: 900 });
-        if (pdfDoc) this.renderPage(pageNum);
+        if (pdfDoc) this.renderPage(pageNum, a);
       },
       zoomIn() { this.setZoom(zoom * 1.25); },
       zoomOut() { this.setZoom(zoom / 1.25); },
@@ -1731,7 +1777,9 @@
           if (e.touches.length === 2) {
             multi = true;
             swipe = null;
-            pinch = { d: dist(e.touches), base: zoom, ratio: 1 };
+            const anchor = this.captureAnchor();
+            pinch = { d: dist(e.touches), base: zoom, ratio: 1, anchor };
+            if (anchor) canvas.style.transformOrigin = `${anchor.fx * 100}% ${anchor.fy * 100}%`;
           } else if (e.touches.length === 1) {
             if (!pinch) multi = false;
             swipe = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(), fit: zoom <= 1.05 };
@@ -1749,9 +1797,10 @@
         viewer.addEventListener('touchend', (e) => {
           if (pinch && e.touches.length === 0) {
             const finalZoom = pinch.base * pinch.ratio;
+            const pinchAnchor = pinch.anchor;
             pinch = null;
-            if (Math.abs(finalZoom - zoom) > 0.01) this.setZoom(finalZoom, true);
-            else canvas.style.transform = '';
+            if (Math.abs(finalZoom - zoom) > 0.01) this.setZoom(finalZoom, true, pinchAnchor);
+            else { canvas.style.transform = ''; canvas.style.transformOrigin = ''; }
             return;
           }
           if (multi || e.touches.length !== 0 || !swipe || e.changedTouches.length !== 1) return;
@@ -1791,6 +1840,7 @@
       onKeyDown(e) {
         if ((e.ctrlKey || e.metaKey) && ['s', 'p', 'u'].includes(e.key.toLowerCase())) { e.preventDefault(); return; }
         if (e.key === 'F12') { e.preventDefault(); return; }
+        if ($('note-modal').classList.contains('show') || $('modal').classList.contains('show')) return;
 
         if (!$('reader-screen').classList.contains('active')) return;
         const tag = (e.target.tagName || '').toLowerCase();
@@ -1813,26 +1863,59 @@
 
       saveNotes(notes) { store.set('kurniapedia_notes', JSON.stringify(notes)); },
 
-      async toggleBookmark() {
-        const notes = this.getNotes();
-        const p = pageNum;
+      // Tombol "simpan halaman": buka popup catatan
+      toggleBookmark() { this.openNoteModal(); },
 
-        if (Object.prototype.hasOwnProperty.call(notes, p)) {
-          if ((notes[p] || '').trim()) {
-            const ok = await this.confirm('Hapus penanda?', `Halaman ${p} memiliki catatan. Penanda dan catatannya akan dihapus.`, 'Hapus');
+      openNoteModal() {
+        if (!pdfDoc) return;
+        const p = pageNum;
+        const notes = this.getNotes();
+        const exists = Object.prototype.hasOwnProperty.call(notes, p);
+        const modal = $('note-modal');
+        const ta = $('note-text');
+
+        $('note-title').textContent = exists ? `Catatan Halaman ${p}` : `Simpan Halaman ${p}`;
+        $('note-chapter').textContent = this.chapterTitleForPage(p);
+        $('note-save').textContent = exists ? 'Perbarui' : 'Simpan';
+        $('note-delete').style.display = exists ? '' : 'none';
+        ta.value = notes[p] || '';
+        modal.classList.add('show');
+        setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 60);
+
+        const close = () => {
+          modal.classList.remove('show');
+          $('note-save').onclick = $('note-cancel').onclick = $('note-delete').onclick = modal.onclick = ta.onkeydown = null;
+        };
+
+        const save = () => {
+          const all = this.getNotes();
+          all[p] = ta.value.trim();
+          this.saveNotes(all);
+          close();
+          this.updateReaderUI();
+          this.toast(exists ? `Catatan halaman ${p} diperbarui` : `Halaman ${p} disimpan`, { actionLabel: 'Lihat catatan', onAction: () => this.showBookmarks(), duration: 3200 });
+        };
+
+        $('note-save').onclick = save;
+        $('note-cancel').onclick = close;
+        modal.onclick = (e) => { if (e.target === modal) close(); };
+        ta.onkeydown = (e) => {
+          if (e.key === 'Escape') close();
+          else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); save(); }
+        };
+        $('note-delete').onclick = async () => {
+          const hasText = (ta.value || '').trim().length > 0;
+          close();
+          if (hasText) {
+            const ok = await this.confirm('Hapus penanda?', `Penanda dan catatan halaman ${p} akan dihapus.`, 'Hapus');
             if (!ok) return;
           }
-          delete notes[p];
-          this.saveNotes(notes);
+          const all = this.getNotes();
+          delete all[p];
+          this.saveNotes(all);
           this.updateReaderUI();
           this.toast(`Penanda halaman ${p} dihapus`);
-          return;
-        }
-
-        notes[p] = '';
-        this.saveNotes(notes);
-        this.updateReaderUI();
-        this.toast(`Halaman ${p} ditandai`, { actionLabel: 'Tulis catatan', onAction: () => this.showBookmarks(), duration: 3500 });
+        };
       },
 
       renderBookmarks() {
