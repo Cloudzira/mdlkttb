@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Kurniapedia Reader</title>
+  <title>Modul Al Fatih Reader</title>
   
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,14 +13,14 @@
   <!-- PDF.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- PWA Manifest Inline (Mendukung Install di HP & Laptop) -->
-  <link rel="manifest" href='data:application/json,{"name":"Kurniapedia Secure Reader","short_name":"Kurniapedia","description":"Aplikasi Pembaca PDF Aman & Offline","start_url":"/index.html","display":"standalone","background_color":"#0b0f17","theme_color":"#2563eb","icons":[{"src":"https://img.icons8.com/fluency/192/pdf.png","sizes":"192x192","type":"image/png"},{"src":"https://img.icons8.com/fluency/512/pdf.png","sizes":"512x512","type":"image/png"}]}'>
+  <!-- PWA Manifest Inline -->
+  <link rel="manifest" href='data:application/json,{"name":"Modul Al Fatih Reader","short_name":"Al Fatih","description":"Modul Kuttab dan Madrasah Al Fatih","start_url":"/index.html","display":"standalone","background_color":"#0b0f17","theme_color":"#2563eb","icons":[{"src":"https://img.icons8.com/fluency/192/pdf.png","sizes":"192x192","type":"image/png"},{"src":"https://img.icons8.com/fluency/512/pdf.png","sizes":"512x512","type":"image/png"}]}'>
   
-  <!-- Meta tag PWA iOS & Windows -->
+  <!-- Meta tag PWA -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Kurniapedia">
+  <meta name="apple-mobile-web-app-title" content="Modul Al Fatih">
 
   <style>
     :root {
@@ -92,7 +92,6 @@
       display: flex;
     }
 
-    /* SVG ICON BASE */
     .icon {
       width: 18px;
       height: 18px;
@@ -104,7 +103,6 @@
       flex-shrink: 0;
     }
 
-    /* BUTTONS */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -205,7 +203,7 @@
 
     .splash-sub {
       color: #94a3b8;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       margin-bottom: 2rem;
     }
 
@@ -439,20 +437,17 @@
       gap: 10px;
     }
 
-    /* INSTALL APP BANNER / BUTTON */
+    /* INSTALL APP BANNER */
     .install-banner {
       background: linear-gradient(135deg, var(--primary), #1d4ed8);
       color: white;
       border-radius: 12px;
       padding: 1rem;
       margin-bottom: 1.5rem;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--shadow-md);
-    }
-    .install-banner.show {
-      display: flex;
     }
 
     /* BOOKMARKS & NOTES ITEM STYLE */
@@ -494,55 +489,7 @@
       border-color: var(--primary);
     }
 
-    /* MODAL POPUP CATATAN */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 1rem;
-    }
-    .modal-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      width: 100%;
-      max-width: 420px;
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: var(--shadow-lg);
-    }
-    .modal-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-      color: var(--text-main);
-    }
-    .modal-card textarea {
-      width: 100%;
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 0.9rem;
-      outline: none;
-      min-height: 100px;
-      resize: vertical;
-      margin-bottom: 1rem;
-    }
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    /* 4. READER SCREEN */
+    /* 4. READER SCREEN - PORTRAIT PRECISION FIX */
     #reader-screen {
       background: var(--bg-canvas);
     }
@@ -567,7 +514,7 @@
       gap: 6px;
       font-weight: 600;
       font-size: 0.85rem;
-      max-width: 120px;
+      max-width: 110px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -590,11 +537,11 @@
       border-radius: 8px;
       font-size: 0.75rem;
       font-weight: 600;
-      min-width: 75px;
+      min-width: 70px;
     }
 
     .page-indicator input {
-      width: 30px;
+      width: 28px;
       border: none;
       background: transparent;
       color: var(--text-main);
@@ -613,7 +560,7 @@
       align-items: flex-start;
       padding: 1.5rem 1rem 4rem 1rem;
       position: relative;
-      touch-action: pan-x pan-y;
+      touch-action: pan-x pan-y pinch-zoom;
     }
 
     canvas {
@@ -623,10 +570,8 @@
       max-width: 100%;
       height: auto !important;
       transform-origin: top center;
-      transition: transform 0.05s ease-out;
     }
 
-    /* FOOTER STANDARD */
     footer.app-footer {
       height: 40px;
       display: flex;
@@ -639,7 +584,6 @@
       flex-shrink: 0;
     }
 
-    /* SHAKE ANIMATION */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
@@ -652,18 +596,6 @@
 </head>
 <body>
 
-  <!-- MODAL POPUP SIMPAN CATATAN -->
-  <div id="note-modal" class="modal-overlay">
-    <div class="modal-card">
-      <h3 id="modal-title">Simpan Halaman & Catatan</h3>
-      <textarea id="modal-note-input" placeholder="Tulis poin-poin penting pada halaman ini..."></textarea>
-      <div class="modal-actions">
-        <button class="btn" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);" onclick="app.closeNoteModal()">Batal</button>
-        <button class="btn" onclick="app.saveNoteFromModal()">Simpan Catatan</button>
-      </div>
-    </div>
-  </div>
-
   <!-- 1. SPLASH SCREEN FUTURISTIK -->
   <div id="splash-screen" class="screen active">
     <div class="futuristic-grid"></div>
@@ -671,8 +603,8 @@
       <div class="splash-logo-box">
         <svg class="icon" style="width: 48px; height: 48px;" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       </div>
-      <h1 class="splash-title">Kurniapedia Reader</h1>
-      <p class="splash-sub">Sistem Membaca Aman Berbasis Kriptografi PWA</p>
+      <h1 class="splash-title">MODUL AL FATIH</h1>
+      <p class="splash-sub">Modul Kuttab dan Madrasah Al Fatih</p>
       <div class="loader-bar"></div>
     </div>
     <footer class="app-footer" style="position: absolute; bottom: 0; width: 100%; background: transparent; border: none; color: #64748b; z-index: 2;">Crafted with ♥ by Kurniapedia 2026</footer>
@@ -724,7 +656,7 @@
     <div class="top-bar">
       <div class="brand-title">
         <svg class="icon" style="color: var(--primary);" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-        <span>Kurniapedia</span>
+        <span>Modul Al Fatih</span>
       </div>
       <div style="display: flex; gap: 8px;">
         <button class="btn-icon" onclick="app.showBookmarks()" title="Halaman Tersimpan & Catatan">
@@ -743,7 +675,7 @@
       <!-- Tombol Install PWA untuk HP & Laptop -->
       <div id="install-banner" class="install-banner">
         <div>
-          <strong style="display: block; font-size: 0.95rem;">Install Kurniapedia App</strong>
+          <strong style="display: block; font-size: 0.95rem;">Install Modul Al Fatih</strong>
           <span style="font-size: 0.8rem; opacity: 0.9;">Akses lebih cepat & baca offline di HP atau Laptop Anda.</span>
         </div>
         <button class="btn" style="background: white; color: var(--primary); padding: 0.5rem 1rem;" onclick="app.installApp()">Install</button>
@@ -825,7 +757,7 @@
           <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
         </button>
 
-        <button class="btn-icon" onclick="app.openNoteModal()" title="Simpan Halaman & Catatan">
+        <button class="btn-icon" onclick="app.saveBookmarkDirect()" title="Simpan Halaman ke Catatan">
           <svg class="icon" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
         </button>
       </div>
@@ -846,8 +778,6 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      const banner = document.getElementById('install-banner');
-      if (banner) banner.classList.add('show');
     });
 
     const TOC_DATA = [
@@ -952,7 +882,7 @@
           }
         });
 
-        // PINCH-TO-ZOOM & SWIPE GESTURES
+        // PINCH-TO-ZOOM OPTIMAL UNTUK PORTRAIT & LANDSCAPE
         let initialDistance = null;
         let startX = 0;
         const container = document.getElementById('pdf-viewer-container');
@@ -966,7 +896,7 @@
           } else if (e.touches.length === 1) {
             startX = e.touches[0].clientX;
           }
-        });
+        }, { passive: true });
 
         container.addEventListener('touchmove', e => {
           if (e.touches.length === 2 && initialDistance !== null) {
@@ -974,15 +904,15 @@
               e.touches[0].clientX - e.touches[1].clientX,
               e.touches[0].clientY - e.touches[1].clientY
             );
-            if (currentDistance > initialDistance + 40) {
+            if (currentDistance > initialDistance + 30) {
               this.zoomIn();
               initialDistance = currentDistance;
-            } else if (currentDistance < initialDistance - 40) {
+            } else if (currentDistance < initialDistance - 30) {
               this.zoomOut();
               initialDistance = currentDistance;
             }
           }
-        });
+        }, { passive: true });
 
         container.addEventListener('touchend', e => {
           initialDistance = null;
@@ -993,10 +923,9 @@
           }
         });
 
-        // Register Service Worker untuk Offline & Install PWA
         if ('serviceWorker' in navigator) {
           const swCode = `
-            const CACHE = 'kurniapedia-pwa-v7';
+            const CACHE = 'kurniapedia-pwa-v8';
             self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/', '/index.html', '/buku.enc']))));
             self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
           `;
@@ -1007,13 +936,13 @@
 
       installApp: async function() {
         if (!deferredPrompt) {
-          alert("Gunakan menu browser Anda (ikon titik tiga / menu Share) lalu pilih 'Add to Home Screen' atau 'Install App'.");
+          alert("Gunakan menu browser (ikon titik tiga di kanan atas Chrome atau tombol Share di Safari) lalu pilih 'Add to Home Screen' atau 'Install App'.");
           return;
         }
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') {
-          document.getElementById('install-banner').classList.remove('show');
+          document.getElementById('install-banner').style.display = 'none';
         }
         deferredPrompt = null;
       },
@@ -1140,28 +1069,16 @@
         this.queueRenderPage(pageNum);
       },
 
-      openNoteModal: function() {
-        let bookmarks = JSON.parse(localStorage.getItem('kurniapedia_notes') || '{}');
-        let existingNote = bookmarks[pageNum] || "";
-        document.getElementById('modal-title').textContent = `Simpan Halaman ${pageNum} & Catatan`;
-        document.getElementById('modal-note-input').value = existingNote === "Tulis catatan penting di sini..." ? "" : existingNote;
-        document.getElementById('note-modal').style.display = 'flex';
-      },
-
-      closeNoteModal: function() {
-        document.getElementById('note-modal').style.display = 'none';
-      },
-
-      saveNoteFromModal: function() {
-        const noteText = document.getElementById('modal-note-input').value.trim();
+      // SIMPAN LANGSUNG KE HALAMAN TERSIMPAN & CATATAN
+      saveBookmarkDirect: function() {
         localStorage.setItem('saved_page', pageNum);
-        
         let bookmarks = JSON.parse(localStorage.getItem('kurniapedia_notes') || '{}');
-        bookmarks[pageNum] = noteText || "Catatan kosong.";
-        localStorage.setItem('kurniapedia_notes', JSON.stringify(bookmarks));
-
-        this.closeNoteModal();
-        alert(`Halaman ${pageNum} dan catatan berhasil disimpan!`);
+        if (!bookmarks[pageNum]) {
+          bookmarks[pageNum] = "Tulis poin catatan penting di sini...";
+          localStorage.setItem('kurniapedia_notes', JSON.stringify(bookmarks));
+        }
+        alert(`Halaman ${pageNum} berhasil disimpan! Buka menu Catatan untuk melihatnya.`);
+        this.showBookmarks();
       },
 
       renderBookmarks: function() {
