@@ -27,7 +27,7 @@ const app = {
       } else {
         this.showScreen('login-screen');
       }
-    }, 1500);
+    }, 1000);
 
     document.getElementById('login-form').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -47,8 +47,9 @@ const app = {
 
     // Swipe gesture support
     let startX = 0;
-    document.getElementById('pdf-viewer-container').addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
-    document.getElementById('pdf-viewer-container').addEventListener('touchend', e => {
+    const container = document.getElementById('pdf-viewer-container');
+    container.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
+    container.addEventListener('touchend', e => {
       let endX = e.changedTouches[0].screenX;
       if (endX < startX - 50) this.nextPage();
       if (endX > startX + 50) this.prevPage();
@@ -62,31 +63,69 @@ const app = {
   showScreen: function(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    if (id === 'reader-screen' && !pdfDoc) this.loadEncryptedPDF();
+    if (id === 'reader-screen' && !pdfDoc) this.loadAndDecryptPDF();
   },
 
   openReader: function() { this.showScreen('reader-screen'); },
   showToc: function() { this.showScreen('toc-screen'); },
 
-  loadEncryptedPDF: async function() {
+  // Fungsi Dekripsi Aman di Sisi Klien menggunakan Web Crypto API
+  loadAndDecryptPDF: async function() {
     try {
-      // 1. Unduh file terenkripsi dari server (GitHub/Vercel)
+      // 1. Ambil file terenkripsi dari server
       const response = await fetch('buku.enc');
+      if (!response.ok) throw new Error("Gagal mengunduh file dokumen.");
       const encryptedBuffer = await response.arrayBuffer();
 
-      // 2. Simulasi Dekripsi Sederhana di Memori Browser (Sesuai kunci sandi Anda)
-      // Catatan: Untuk dekripsi AES standar di browser, gunakan SubtleCrypto API atau pustaka pembantu. 
-      // Untuk kesederhanaan kode murni ini, asumsikan file dimuat langsung oleh PDF.js jika diuji coba, 
-      // atau gunakan Web Crypto API untuk dekripsi penuh.
+      // 2. Ekstrak IV (16 byte pertama) dan Data Terenkripsi sisanya
+      const iv = encryptedBuffer.slice(0, 16);
+      const dataCipher = encryptedBuffer.slice(16);
+
+      // 3. Kunci Rahasia yang sama dengan saat enkripsi di Node.js
+      const passphrase = "KurniapediaSecretPass2026";
+      const enc = new TextEncoder();
       
-      // Menggunakan file langsung sebagai data buffer untuk PDF.js
-      pdfjsLib.getDocument({ data: encryptedBuffer }).promise.then(pdfDoc_ => {
+      // Turunkan kunci menggunakan PBKDF2 (menyesuaikan scrypt/salt di tahap enkripsi)
+      const keyMaterial = await window.crypto.subtle.importKey(
+        "raw",
+        enc.encode(passphrase),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+
+      const cryptoKey = await window.crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: enc.encode("salt"),
+          iterations: 100000,
+          hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-CBC", length: 256 },
+        false,
+        ["decrypt"]
+      );
+
+      // 4. Proses Dekripsi File di dalam RAM Browser
+      const decryptedBuffer = await window.crypto.subtle.decrypt(
+        { name: "AES-CBC", iv: iv },
+        cryptoKey,
+        dataCipher
+      );
+
+      // 5. Muat hasil dekripsi ke PDF.js
+      pdfjsLib.getDocument({ data: decryptedBuffer }).promise.then(pdfDoc_ => {
         pdfDoc = pdfDoc_;
         document.getElementById('page-count').textContent = pdfDoc.numPages;
         this.renderPage(pageNum);
+      }).catch(err => {
+        alert("Format dokumen tidak valid setelah dekripsi.");
+        console.error(err);
       });
+
     } catch (err) {
-      alert("Gagal memuat dokumen aman.");
+      alert("Gagal memuat dokumen aman. Periksa koneksi atau kunci dekripsi.");
       console.error(err);
     }
   },
