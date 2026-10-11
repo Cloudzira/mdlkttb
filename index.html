@@ -1,4 +1,234 @@
-<!-- 3. DAFTAR ISI SCREEN -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kurniapedia Secure Reader</title>
+  
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- PWA Manifest Inline Data URL -->
+  <link rel="manifest" href='data:application/json,{"name":"Kurniapedia Reader","short_name":"PDFReader","start_url":"/index.html","display":"standalone","background_color":"#ffffff","theme_color":"#2563eb"}'>
+
+  <!-- STYLES (CSS INLINE) -->
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg-color: #f8fafc;
+      --text-color: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Splash Screen */
+    #splash-screen {
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      text-align: center;
+    }
+
+    #splash-screen h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Login Screen */
+    .auth-container {
+      max-width: 400px;
+      margin: auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      width: 90%;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    /* Reader Header & Toolbar */
+    header.reader-header {
+      background: white;
+      padding: 0.75rem 1.5rem;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .toolbar button {
+      width: auto;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    #pdf-viewer-container {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      background: #e2e8f0;
+    }
+
+    canvas {
+      box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+      background: white;
+      max-width: 100%;
+    }
+
+    /* Halaman Daftar Isi Profesional */
+    .toc-container-box {
+      flex: 1;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      overflow-y: auto;
+    }
+
+    .toc-container-box h2 {
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #1e293b;
+    }
+
+    .toc-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px dashed #cbd5e1;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toc-item:hover {
+      background: #f1f5f9;
+      color: var(--primary);
+    }
+
+    .toc-title {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .toc-page {
+      font-weight: 600;
+      color: #475569;
+      padding-left: 10px;
+    }
+
+    .toc-subitem {
+      padding-left: 1.5rem;
+      font-size: 0.9rem;
+      color: #475569;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: #64748b;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. SPLASH SCREEN -->
+  <div id="splash-screen" class="screen active">
+    <h1>Kurniapedia Reader</h1>
+    <p>Menyiapkan sistem aman...</p>
+    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+  </div>
+
+  <!-- 2. LOGIN SCREEN -->
+  <div id="login-screen" class="screen">
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+      <div class="auth-container">
+        <h2>Silakan Masuk</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label>Nama / Email</label>
+            <input type="text" id="username" required placeholder="Masukkan nama...">
+          </div>
+          <button type="submit">Masuk</button>
+        </form>
+      </div>
+    </div>
+    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+  </div>
+
+  <!-- 3. DAFTAR ISI SCREEN -->
   <div id="toc-screen" class="screen">
     <div class="toc-container-box">
       <h2>Daftar Isi</h2>
@@ -172,3 +402,196 @@
     </div>
     <footer>Crafted with ♥ by Kurniapedia 2026</footer>
   </div>
+
+  <!-- 4. READER SCREEN -->
+  <div id="reader-screen" class="screen">
+    <header class="reader-header">
+      <h3 id="watermark-title">Reader - Kurniapedia</h3>
+      <div class="toolbar">
+        <button onclick="app.prevPage()">◀ Prev</button>
+        <span>Hal <input type="number" id="page-num" style="width: 50px; text-align: center;" value="1"> / <span id="page-count">0</span></span>
+        <button onclick="app.nextPage()">Next ▶</button>
+        <button onclick="app.zoomIn()">Zoom +</button>
+        <button onclick="app.zoomOut()">Zoom -</button>
+        <button onclick="app.saveBookmark()">Simpan Hal</button>
+        <button onclick="app.toggleFullscreen()">Full Screen</button>
+        <button onclick="app.showToc()">Daftar Isi</button>
+      </div>
+    </header>
+
+    <div id="pdf-viewer-container">
+      <canvas id="pdf-canvas"></canvas>
+    </div>
+    <footer>Crafted with ♥ by Kurniapedia 2026</footer>
+  </div>
+
+  <!-- JAVASCRIPT & SERVICE WORKER INLINE -->
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let pdfDoc = null,
+        pageNum = parseInt(localStorage.getItem('saved_page')) || 1,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 1.2,
+        canvas = document.getElementById('pdf-canvas'),
+        ctx = canvas.getContext('2d');
+
+    const app = {
+      init: function() {
+        // Anti Klik Kanan & Shortcut Download
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+          if ((e.ctrlKey && ['s','p','u'].includes(e.key)) || e.key === 'F12') {
+            e.preventDefault();
+            alert("Fitur ini dinonaktifkan untuk keamanan dokumen.");
+          }
+        });
+
+        // Splash screen 1.5 detik
+        setTimeout(() => {
+          const user = localStorage.getItem('is_logged_in');
+          if (user) {
+            document.getElementById('watermark-title').textContent = `Reader - ${user}`;
+            this.showScreen('toc-screen');
+          } else {
+            this.showScreen('login-screen');
+          }
+        }, 1500);
+
+        // Form Login
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('username').value;
+          localStorage.setItem('is_logged_in', name);
+          document.getElementById('watermark-title').textContent = `Reader - ${name}`;
+          this.showScreen('toc-screen');
+        });
+
+        // Jump Page Manual
+        document.getElementById('page-num').addEventListener('change', (e) => {
+          let num = parseInt(e.target.value);
+          if (pdfDoc && num >= 1 && num <= pdfDoc.numPages) {
+            pageNum = num;
+            this.queueRenderPage(pageNum);
+          }
+        });
+
+        // Swipe Mobile Support
+        let startX = 0;
+        const container = document.getElementById('pdf-viewer-container');
+        container.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
+        container.addEventListener('touchend', e => {
+          let endX = e.changedTouches[0].screenX;
+          if (endX < startX - 50) this.nextPage();
+          if (endX > startX + 50) this.prevPage();
+        });
+
+        // Register Inline Service Worker untuk PWA Offline
+        if ('serviceWorker' in navigator) {
+          const swCode = `
+            const CACHE_NAME = 'kurniapedia-pwa-v1';
+            self.addEventListener('install', e => {
+              e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['/', '/index.html', '/buku.enc'])));
+            });
+            self.addEventListener('fetch', e => {
+              e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+            });
+          `;
+          const blob = new Blob([swCode], { type: 'application/javascript' });
+          navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW error:', err));
+        }
+      },
+
+      showScreen: function(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if (id === 'reader-screen' && !pdfDoc) this.loadAndDecryptPDF();
+      },
+
+      openReader: function() { this.showScreen('reader-screen'); },
+      showToc: function() { this.showScreen('toc-screen'); },
+
+      // Dekripsi Teraman di RAM Browser menggunakan Web Crypto API
+      loadAndDecryptPDF: async function() {
+        try {
+          const response = await fetch('buku.enc');
+          if (!response.ok) throw new Error("File dokumen tidak ditemukan.");
+          const encryptedBuffer = await response.arrayBuffer();
+
+          const iv = encryptedBuffer.slice(0, 16);
+          const dataCipher = encryptedBuffer.slice(16);
+
+          const passphrase = "KurniapediaSecretPass2026";
+          const enc = new TextEncoder();
+
+          const keyMaterial = await window.crypto.subtle.importKey(
+            "raw", enc.encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]
+          );
+
+          const cryptoKey = await window.crypto.subtle.deriveKey(
+            { name: "PBKDF2", salt: enc.encode("salt"), iterations: 100000, hash: "SHA-256" },
+            keyMaterial, { name: "AES-CBC", length: 256 }, false, ["decrypt"]
+          );
+
+          const decryptedBuffer = await window.crypto.subtle.decrypt(
+            { name: "AES-CBC", iv: iv }, cryptoKey, dataCipher
+          );
+
+          pdfjsLib.getDocument({ data: decryptedBuffer }).promise.then(pdfDoc_ => {
+            pdfDoc = pdfDoc_;
+            document.getElementById('page-count').textContent = pdfDoc.numPages;
+            this.renderPage(pageNum);
+          }).catch(err => {
+            alert("Gagal mendekripsi format file.");
+            console.error(err);
+          });
+
+        } catch (err) {
+          alert("Gagal memuat dokumen. Pastikan file buku.enc ada di repositori Anda.");
+          console.error(err);
+        }
+      },
+
+      renderPage: function(num) {
+        pageRendering = true;
+        pdfDoc.getPage(num).then(page => {
+          let viewport = page.getViewport({ scale: scale });
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          page.render({ canvasContext: ctx, viewport: viewport }).promise.then(() => {
+            pageRendering = false;
+            if (pageNumPending !== null) {
+              this.renderPage(pageNumPending);
+              pageNumPending = null;
+            }
+          });
+        });
+        document.getElementById('page-num').value = num;
+      },
+
+      queueRenderPage: function(num) {
+        if (pageRendering) pageNumPending = num;
+        else this.renderPage(num);
+      },
+
+      prevPage: function() { if (pageNum > 1) { pageNum--; this.queueRenderPage(pageNum); } },
+      nextPage: function() { if (pdfDoc && pageNum < pdfDoc.numPages) { pageNum++; this.queueRenderPage(pageNum); } },
+      goToPage: function(num) { pageNum = num; this.openReader(); if (pdfDoc) this.queueRenderPage(pageNum); },
+      zoomIn: function() { scale += 0.2; this.queueRenderPage(pageNum); },
+      zoomOut: function() { if (scale > 0.6) { scale -= 0.2; this.queueRenderPage(pageNum); } },
+      saveBookmark: function() {
+        localStorage.setItem('saved_page', pageNum);
+        alert(`Halaman ${pageNum} berhasil disimpan!`);
+      },
+      toggleFullscreen: function() {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else if (document.exitFullscreen) document.exitFullscreen();
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => app.init());
+  </script>
+</body>
+</html>
