@@ -1,6 +1,6 @@
 // Service Worker - Modul Al Fatih Reader
 // Letakkan di folder yang sama dengan index.html, manifest.json, icon-192.png, icon-512.png dan buku.enc
-const CACHE = 'alfatih-pwa-v11';
+const CACHE = 'alfatih-pwa-v12';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 const CDN = [
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
