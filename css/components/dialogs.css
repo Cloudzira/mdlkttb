@@ -1,0 +1,60 @@
+/* ============================================================
+   TOAST & MODAL
+   Pesan singkat (toast) dan kotak dialog konfirmasi.
+   ============================================================ */
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(110px + var(--safe-bottom));
+  transform: translate(-50%, 20px);
+  background: #1c150b;
+  color: #f6ecd6;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 2rem);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+#toast button { background: none; border: none; color: #e6bf68; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+
+#modal, #note-modal, #about-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 120;
+}
+#modal.show, #note-modal.show, #about-modal.show { display: flex; }
+.note-box { max-width: 420px; }
+.note-chapter { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.9rem; line-height: 1.4; }
+.note-delete { display: block; margin: 0.9rem auto 0; background: none; border: none; color: var(--primary); font-weight: 600; font-size: 0.8rem; cursor: pointer; padding: 6px 10px; text-decoration: underline; text-underline-offset: 3px; }
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: var(--shadow-lg);
+  animation: screenIn 0.2s ease both;
+}
+.modal-box h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+.modal-box p { color: var(--text-muted); font-size: 0.875rem; line-height: 1.5; margin-bottom: 1.25rem; }
+.modal-actions { display: flex; gap: 10px; }
+.modal-actions .btn { flex: 1; }

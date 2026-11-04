@@ -1,0 +1,26 @@
+/* ============================================================
+   FOOTER
+   Footer "Crafted with ♥ by Kurniapedia" di setiap layar.
+   ============================================================ */
+
+footer.app-footer {
+  height: calc(40px + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-card);
+  flex-shrink: 0;
+}
+
+footer.app-footer.floating {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: transparent;
+  border: none;
+  z-index: 2;
+}

@@ -1,0 +1,144 @@
+/* ============================================================
+   LAYAR 4: PEMBACA
+   Header pembaca, kanvas PDF, overlay pemuatan, dan bilah navigasi halaman.
+   ============================================================ */
+
+#reader-screen { background: var(--bg-canvas); }
+
+.reader-header {
+  min-height: calc(60px + var(--safe-top));
+  padding: var(--safe-top) 0.75rem 0 0.75rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.reader-title { flex: 1; min-width: 0; line-height: 1.25; }
+.reader-title .rt-main { font-weight: 700; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reader-title .rt-sub { font-size: 0.7rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.reader-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+.read-progress { height: 3px; background: transparent; flex-shrink: 0; z-index: 20; }
+.read-progress > div { height: 100%; width: 0%; background: var(--primary); transition: width 0.3s ease; }
+
+#pdf-viewer-container {
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1rem 7rem 1rem;
+  position: relative;
+  touch-action: pan-x pan-y;
+  overscroll-behavior: contain;
+}
+
+#page-wrap {
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+}
+
+canvas#pdf-canvas {
+  display: block;
+  background: #ffffff;
+  box-shadow: var(--shadow-lg);
+  border-radius: 4px;
+  transform-origin: top center;
+  transition: opacity 0.2s ease;
+}
+
+canvas#pdf-canvas.night { filter: invert(0.92) hue-rotate(180deg); }
+canvas#pdf-canvas.loading { opacity: 0.45; }
+
+/* Overlay pemuatan dokumen */
+#reader-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  background: var(--bg-canvas);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 2rem;
+  text-align: center;
+}
+#reader-overlay.show { display: flex; }
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid var(--primary-light);
+  border-top-color: var(--primary);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.overlay-text { font-weight: 600; font-size: 0.95rem; }
+.overlay-sub { color: var(--text-muted); font-size: 0.8rem; max-width: 300px; line-height: 1.5; }
+.overlay-bar { width: 200px; height: 6px; background: var(--primary-light); border-radius: 6px; overflow: hidden; }
+.overlay-bar > div { height: 100%; width: 0%; background: var(--primary); transition: width 0.2s ease; }
+
+/* Navigasi halaman mengambang */
+.reader-nav {
+  position: absolute;
+  left: 50%;
+  bottom: calc(46px + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 18;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
+.page-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.page-indicator input {
+  width: 54px;
+  height: 38px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-main);
+  text-align: center;
+  font-weight: 800;
+  font-size: 16px;
+  outline: none;
+  padding: 0;
+  border-radius: 10px;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
+.page-indicator input::-webkit-outer-spin-button,
+.page-indicator input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.page-indicator input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.page-indicator .pi-sep { opacity: 0.55; }
+.page-indicator .pi-total { min-width: 3ch; text-align: left; }
+
+.reader-nav .sep { width: 1px; height: 22px; background: var(--border-color); margin: 0 2px; }

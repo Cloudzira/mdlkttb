@@ -1,0 +1,12 @@
+/* ============================================================
+   CETAK & ANIMASI
+   Sembunyikan halaman saat dicetak; kurangi animasi bagi yang memilih "reduce motion".
+   ============================================================ */
+
+@media print { body { display: none !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  #splash-screen .splash-logo { opacity: 1; transform: none; }
+  #splash-screen .splash-logo-wrap::before { opacity: 1; }
+}

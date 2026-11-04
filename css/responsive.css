@@ -1,0 +1,14 @@
+/* ============================================================
+   RESPONSIF
+   Penyesuaian untuk layar pendek dan layar lebar.
+   ============================================================ */
+
+/* Layar pendek: kartu login bisa digulir agar tidak terpotong */
+@media (max-height: 700px) {
+  #login-screen { overflow-y: auto; justify-content: flex-start; padding-bottom: 4rem; }
+  #login-screen .auth-card { margin: auto 0; }
+}
+
+@media (min-width: 768px) {
+  .toc-item-title { font-size: 0.95rem; }
+}

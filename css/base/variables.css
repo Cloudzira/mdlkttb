@@ -1,0 +1,49 @@
+/* ============================================================
+   VARIABEL TEMA
+   Warna, bayangan, dan ukuran area aman. Mode terang (:root) dan gelap (html.dark).
+   ============================================================ */
+
+:root {
+  --bg-main: #f7f1e3;
+  --bg-card: #fffcf5;
+  --bg-canvas: #e9dfc9;
+  --text-main: #2b2012;
+  --text-muted: #7a6a4f;
+  --border-color: #e6dac0;
+  --primary: #9a6f14;
+  --primary-hover: #805a0d;
+  --primary-light: rgba(154, 111, 20, 0.12);
+  --accent-glow: rgba(154, 111, 20, 0.22);
+  --on-primary: #ffffff;
+  --grad: linear-gradient(135deg, #b8862b, #8a6212);
+  --glass-bg: rgba(255, 252, 245, 0.88);
+  --glass-border: rgba(230, 218, 192, 0.9);
+  --danger: #c0392b;
+  --success: #10b981;
+  --shadow-sm: 0 1px 2px 0 rgba(60, 40, 5, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(60, 40, 5, 0.12);
+  --shadow-lg: 0 10px 15px -3px rgba(60, 40, 5, 0.14);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html.dark {
+  --bg-main: #0e0a05;
+  --bg-card: #18120a;
+  --bg-canvas: #070503;
+  --text-main: #f6ecd6;
+  --text-muted: #a8987a;
+  --border-color: #2d2314;
+  --primary: #d8ac4e;
+  --primary-hover: #e6bf68;
+  --primary-light: rgba(216, 172, 78, 0.14);
+  --accent-glow: rgba(216, 172, 78, 0.25);
+  --on-primary: #1a1205;
+  --grad: linear-gradient(135deg, #e2b960, #b88a2e);
+  --glass-bg: rgba(24, 18, 10, 0.88);
+  --glass-border: rgba(45, 35, 20, 0.9);
+  --danger: #ef5b4b;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.55);
+}

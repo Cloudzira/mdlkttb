@@ -1,0 +1,126 @@
+/* ============================================================
+   LAYAR 1: SPLASH
+   Layar pembuka berisi logo animasi dan bilah pemuatan.
+   ============================================================ */
+
+#splash-screen {
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #1c140a 0%, #070503 100%);
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to right, rgba(216, 172, 78, 0.06) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(216, 172, 78, 0.06) 1px, transparent 1px);
+  background-size: 30px 30px;
+  z-index: 1;
+}
+
+.splash-content-box {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-logo { display: block; object-fit: contain; width: auto; }
+
+/* Logo splash: ukuran dikunci (tanpa loncatan saat gambar dimuat) dan
+   hanya transform/opacity yang dianimasikan (halus di GPU laptop/desktop) */
+.splash-logo-wrap {
+  position: relative;
+  width: 82px;
+  height: 140px;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+.splash-logo-wrap::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 230px; height: 230px;
+  margin: -115px 0 0 -115px;
+  background: radial-gradient(circle, rgba(216, 172, 78, 0.38) 0%, rgba(216, 172, 78, 0) 65%);
+  border-radius: 50%;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.splash-logo {
+  position: relative;
+  width: 82px;
+  height: 140px;
+  aspect-ratio: 176 / 300;
+  opacity: 0;
+  transform: translateZ(0) scale(0.6);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* Animasi baru berjalan setelah logo selesai dimuat (kelas .run) */
+#splash-screen.run .splash-logo {
+  animation: logoIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+             logoPulse 1.8s ease-in-out 0.7s infinite;
+}
+#splash-screen.run .splash-logo-wrap::before {
+  animation: glowIn 0.7s ease-out forwards, glowPulse 1.8s ease-in-out 0.7s infinite;
+}
+
+@keyframes logoIn {
+  from { opacity: 0; transform: translateZ(0) scale(0.6); }
+  to   { opacity: 1; transform: translateZ(0) scale(1); }
+}
+@keyframes logoPulse {
+  0%, 100% { opacity: 1; transform: translateZ(0) scale(1); }
+  50%      { opacity: 1; transform: translateZ(0) scale(1.05); }
+}
+@keyframes glowIn    { from { opacity: 0; } to { opacity: 1; } }
+@keyframes glowPulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.7; transform: scale(1.08); }
+}
+
+#splash-screen { transition: opacity 0.35s ease; }
+#splash-screen.leaving { opacity: 0; }
+
+.splash-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #f6ecd6;
+  margin-bottom: 0.5rem;
+}
+
+.splash-sub { color: #b3a283; font-size: 0.95rem; margin-bottom: 2rem; }
+
+.loader-bar {
+  width: 160px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loader-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; height: 100%; width: 50%;
+  background: #d8ac4e;
+  border-radius: 4px;
+  animation: loadAnim 1.5s infinite ease-in-out;
+}
+
+@keyframes loadAnim {
+  0% { left: -50%; width: 30%; }
+  50% { left: 40%; width: 60%; }
+  100% { left: 100%; width: 30%; }
+}
