@@ -6,7 +6,7 @@
  * naikkan nomor versi pada CACHE di bawah (mis. v14 -> v15) agar HP pengguna ikut memperbarui.
  */
 
-const CACHE = 'alfatih-pwa-v14';
+const CACHE = 'alfatih-pwa-v15';
 
 // File aplikasi yang disimpan saat pemasangan (kecil-kecil).
 // Buku (buku.enc, besar) disimpan setelah pertama kali dibaca.
