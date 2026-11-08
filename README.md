@@ -1,7 +1,7 @@
 # Modul Al Fatih Reader
 
 Aplikasi web (PWA) untuk membaca Modul Kuttab dan Madrasah Al Fatih: daftar isi, lanjut baca,
-penanda & catatan, tema gelap/terang, mode baca malam, dan bisa dibaca offline.
+penanda & catatan, tema gelap/terang, mode baca malam, layar tetap menyala saat membaca, dan bisa dibaca offline.
 
 ## Struktur folder
 
@@ -29,9 +29,9 @@ mdlkttb-main/
     ├── main.js             TITIK MASUK: merangkai semua modul
     ├── config.js           PENGATURAN (kata sandi, nama file buku, batas zoom, dll.)
     ├── theme-init.js       Menerapkan tema lebih awal agar layar tidak berkedip
-    ├── data/               Data statis: toc.js (daftar isi), socials.js (media sosial)
+    ├── data/               Data statis: toc.js (daftar isi)
     ├── core/               Fondasi: storage, state, session, utils, dom, icons
-    ├── services/           Kerja di balik layar: pdf-loader, pwa, notes-store
+    ├── services/           Kerja di balik layar: pdf-loader, pwa, notes-store, wake-lock
     ├── ui/                 Komponen umum: router (pindah layar), toast, dialogs,
     │                       about, splash, theme, actions
     └── features/           Fitur per layar: auth, toc, reader, gestures,
@@ -47,7 +47,6 @@ mdlkttb-main/
 | Batas zoom, lebar halaman             | `js/config.js`           | `ZOOM_MIN`, `ZOOM_MAX`, `MAX_PAGE_WIDTH` |
 | Lama splash screen                    | `js/config.js`           | `SPLASH_VISIBLE_MS`                  |
 | Daftar isi (judul / nomor halaman)    | `js/data/toc.js`         | baris `{ title, page, isSub }`       |
-| Tautan media sosial                   | `js/data/socials.js`     | isi `url`                            |
 | Warna tema                            | `css/base/variables.css` | variabel `--primary`, `--bg-main`, dst. |
 | Teks di layar (judul, tombol, dsb.)   | `index.html`             | teks di dalam tag                    |
 | Versi aplikasi (tampil di "Tentang")  | `js/config.js`           | `APP_VERSION`                        |
@@ -82,6 +81,6 @@ Unggah seluruh isi folder ini ke repositori GitHub; Vercel akan menayangkannya a
 (tidak perlu build).
 
 **PENTING setiap kali memperbarui file di `css/`, `js/`, atau `assets/`:** naikkan nomor versi
-`CACHE` di bagian atas `sw.js` (misalnya `alfatih-pwa-v13` menjadi `alfatih-pwa-v14`) agar
+`CACHE` di bagian atas `sw.js` (misalnya `alfatih-pwa-v14` menjadi `alfatih-pwa-v15`) agar
 HP pengguna ikut memperbarui. Jika menambah file baru di folder tersebut, tambahkan juga ke daftar `SHELL`
 di `sw.js` supaya ikut tersimpan untuk mode offline.

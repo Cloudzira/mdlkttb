@@ -24,3 +24,17 @@ footer.app-footer.floating {
   border: none;
   z-index: 2;
 }
+
+/* Teks "Kurniapedia" tebal dan bisa diklik (ke kurniapedia.my.id), ikon hati merah */
+footer.app-footer a,
+.about-footer a {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+footer.app-footer a strong,
+.about-footer a strong { font-weight: 800; }
+footer.app-footer a:hover,
+.about-footer a:hover { text-decoration: underline; }
+footer.app-footer .heart,
+.about-footer .heart { color: #e53935; margin: 0 0.2em; }

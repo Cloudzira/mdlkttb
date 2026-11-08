@@ -3,10 +3,10 @@
  *
  * Letakkan di folder yang sama dengan index.html.
  * PENTING: setiap kali Anda mengubah file di css/, js/, atau assets/,
- * naikkan nomor versi pada CACHE di bawah (mis. v13 -> v14) agar HP pengguna ikut memperbarui.
+ * naikkan nomor versi pada CACHE di bawah (mis. v14 -> v15) agar HP pengguna ikut memperbarui.
  */
 
-const CACHE = 'alfatih-pwa-v13';
+const CACHE = 'alfatih-pwa-v14';
 
 // File aplikasi yang disimpan saat pemasangan (kecil-kecil).
 // Buku (buku.enc, besar) disimpan setelah pertama kali dibaca.
@@ -38,7 +38,6 @@ const SHELL = [
   './js/core/state.js',
   './js/core/storage.js',
   './js/core/utils.js',
-  './js/data/socials.js',
   './js/data/toc.js',
   './js/features/auth.js',
   './js/features/chapters.js',
@@ -53,6 +52,7 @@ const SHELL = [
   './js/services/notes-store.js',
   './js/services/pdf-loader.js',
   './js/services/pwa.js',
+  './js/services/wake-lock.js',
   './js/theme-init.js',
   './js/ui/about.js',
   './js/ui/actions.js',

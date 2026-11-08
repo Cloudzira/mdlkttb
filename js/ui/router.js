@@ -8,6 +8,7 @@
 
 import { $ } from '../core/dom.js';
 import { isLoggedIn } from '../core/session.js';
+import { keepScreenAwake } from '../services/wake-lock.js';
 
 /** Layar yang hanya boleh dibuka setelah login. */
 const PROTECTED_SCREENS = ['toc-screen', 'bookmarks-screen', 'reader-screen'];
@@ -33,6 +34,9 @@ export function showScreen(id, options = {}) {
 
   document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
   $(id).classList.add('active');
+
+  // Layar pembaca: jaga layar tetap menyala. Layar lain: kembali normal.
+  keepScreenAwake(id === 'reader-screen');
 
   // Catat di riwayat browser agar tombol Back di HP berfungsi.
   if (PROTECTED_SCREENS.includes(id)) {

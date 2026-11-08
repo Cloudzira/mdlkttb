@@ -8,9 +8,9 @@
  *
  * Peta folder js/:
  *   config.js    pengaturan (kata sandi, nama file buku, batas zoom, ...)
- *   data/        data statis (daftar isi, media sosial)
+ *   data/        data statis (daftar isi)
  *   core/        fondasi: penyimpanan, state bersama, fungsi bantu, ikon
- *   services/    kerja di balik layar: memuat PDF, PWA, penyimpanan catatan
+ *   services/    kerja di balik layar: memuat PDF, PWA, penyimpanan catatan, layar tetap menyala
  *   ui/          komponen tampilan umum: toast, dialog, pindah layar, tema
  *   features/    fitur per layar: login, daftar isi, pembaca, catatan, gestur
  */
@@ -22,9 +22,10 @@ import { setupActions } from './ui/actions.js';
 import { onEnterScreen, showScreen, showToc, showBookmarks, setupBackButton } from './ui/router.js';
 import { playSplash } from './ui/splash.js';
 import { toggleTheme, applyThemeIcon } from './ui/theme.js';
-import { openAbout, renderSocials } from './ui/about.js';
+import { openAbout } from './ui/about.js';
 
 import { setupInstallPrompt, setupIosInstallHint, installApp, registerServiceWorker } from './services/pwa.js';
+import { setupWakeLock } from './services/wake-lock.js';
 
 import { setupAuthEvents, togglePassword, logout } from './features/auth.js';
 import { renderTocItems, updateProgressCard, schedulePreload, setupTocEvents } from './features/toc.js';
@@ -108,7 +109,6 @@ function init() {
   // Tampilan awal
   safely(applyThemeIcon);
   safely(applyNight);
-  safely(renderSocials);
   safely(() => renderTocItems());
   safely(renderBookmarks);
   safely(updateProgressCard);
@@ -121,6 +121,7 @@ function init() {
   setupTocEvents();
   setupReaderEvents();
   setupGestures();
+  setupWakeLock();
 
   // PWA
   registerServiceWorker();
