@@ -1,6 +1,6 @@
 /* ============================================================
    LAYAR 3: DAFTAR ISI
-   Bilah atas, kartu progres, daftar isi, tombol mengambang, dan banner install.
+   Bilah atas, kartu progres, daftar isi dan tombol mengambang.
    ============================================================ */
 
 #toc-screen, #bookmarks-screen { background: var(--bg-main); }
@@ -172,17 +172,3 @@
   gap: 10px;
 }
 
-/* Banner install */
-.install-banner {
-  background: var(--grad);
-  color: var(--on-primary);
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  box-shadow: var(--shadow-md);
-}
-.install-banner.show { display: flex; }

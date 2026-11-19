@@ -13,6 +13,7 @@ mdlkttb-main/
 ├── buku.enc            Buku (PDF) yang sudah dienkripsi
 ├── icon-192.png        Ikon aplikasi
 ├── icon-512.png
+├── icon-maskable-512.png   Ikon khusus Android (aman dipotong bentuk bulat/kotak)
 │
 ├── assets/             Gambar
 │   ├── logo.png            Logo aplikasi
@@ -21,7 +22,7 @@ mdlkttb-main/
 ├── css/                Tampilan (urutan pemuatan ada di index.html)
 │   ├── base/               variables.css (warna & tema), base.css (reset & dasar)
 │   ├── components/         buttons, footer, dialogs (toast & modal), about
-│   ├── screens/            splash, login, toc, bookmarks, reader  (satu file per layar)
+│   ├── screens/            splash, login, cover, toc, bookmarks, reader  (satu file per layar)
 │   ├── responsive.css      penyesuaian layar pendek / lebar
 │   └── accessibility.css   cetak & "reduce motion"
 │
@@ -81,6 +82,6 @@ Unggah seluruh isi folder ini ke repositori GitHub; Cloudflare Pages akan menaya
 (framework preset: None, build command kosong, output directory `/`).
 
 **PENTING setiap kali memperbarui file di `css/`, `js/`, atau `assets/`:** naikkan nomor versi
-`CACHE` di bagian atas `sw.js` (misalnya `alfatih-pwa-v16` menjadi `alfatih-pwa-v17`) agar
+`CACHE` di bagian atas `sw.js` (misalnya `alfatih-pwa-v18` menjadi `alfatih-pwa-v19`) agar
 HP pengguna ikut memperbarui. Jika menambah file baru di folder tersebut, tambahkan juga ke daftar `SHELL`
 di `sw.js` supaya ikut tersimpan untuk mode offline.

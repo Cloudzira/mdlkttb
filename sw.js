@@ -3,10 +3,10 @@
  *
  * Letakkan di folder yang sama dengan index.html.
  * PENTING: setiap kali Anda mengubah file di css/, js/, atau assets/,
- * naikkan nomor versi pada CACHE di bawah (mis. v15 -> v16) agar HP pengguna ikut memperbarui.
+ * naikkan nomor versi pada CACHE di bawah (mis. v17 -> v18) agar HP pengguna ikut memperbarui.
  */
 
-const CACHE = 'alfatih-pwa-v16';
+const CACHE = 'alfatih-pwa-v18';
 
 // File aplikasi yang disimpan saat pemasangan (kecil-kecil).
 // Buku (buku.enc, besar) disimpan setelah pertama kali dibaca.
@@ -16,6 +16,7 @@ const SHELL = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  './icon-maskable-512.png',
   './assets/favicon.png',
   './assets/logo.png',
   './css/accessibility.css',
@@ -27,6 +28,7 @@ const SHELL = [
   './css/components/footer.css',
   './css/responsive.css',
   './css/screens/bookmarks.css',
+  './css/screens/cover.css',
   './css/screens/login.css',
   './css/screens/reader.css',
   './css/screens/splash.css',
@@ -152,7 +154,7 @@ self.addEventListener('fetch', (event) => {
   const sameOrigin = url.origin === self.location.origin;
   const isBook = sameOrigin && url.pathname.endsWith('buku.enc');
   const isAppAsset = sameOrigin && /\/(css|js|assets)\//.test(url.pathname);
-  const isShellFile = sameOrigin && /(manifest\.json|icon-\d+\.png)$/.test(url.pathname);
+  const isShellFile = sameOrigin && /(manifest\.json|icon-[a-z]*-?\d+\.png)$/.test(url.pathname);
   const isCdn = CDN.includes(request.url) || url.host === 'fonts.googleapis.com' || url.host === 'fonts.gstatic.com';
 
   if (isAppAsset) {

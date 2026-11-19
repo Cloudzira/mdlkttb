@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="css/components/buttons.css">
   <link rel="stylesheet" href="css/screens/splash.css">
   <link rel="stylesheet" href="css/screens/login.css">
+  <link rel="stylesheet" href="css/screens/cover.css">
   <link rel="stylesheet" href="css/screens/toc.css">
   <link rel="stylesheet" href="css/screens/bookmarks.css">
   <link rel="stylesheet" href="css/screens/reader.css">
@@ -104,6 +105,30 @@
     <footer class="app-footer floating"><span>Crafted with <span class="heart" aria-label="cinta">♥</span> by <a href="https://kurniapedia.my.id/" target="_blank" rel="noopener noreferrer"><strong>Kurniapedia</strong></a> 2026</span></footer>
   </div>
 
+  <!-- 2.5 COVER (tampil setelah login, sebelum daftar isi) -->
+  <div id="cover-screen" class="screen">
+    <div class="futuristic-grid"></div>
+    <div class="cover-content">
+      <div class="cover-logo-wrap"><img src="assets/logo.png" class="app-logo cover-logo" alt="Logo Al Fatih" width="70" height="120" decoding="async"></div>
+      <h1 class="cover-title">MODUL AL FATIH</h1>
+      <p class="cover-sub">Modul Kuttab dan Madrasah Al Fatih</p>
+      <p class="cover-greeting" id="cover-greeting"></p>
+
+      <div class="cover-actions">
+        <button type="button" class="btn cover-btn" data-action="open-toc">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          <span>Buka Daftar Isi</span>
+        </button>
+        <button type="button" class="btn btn-secondary cover-btn" id="cover-install" data-action="install-app" style="display:none;">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Install Aplikasi</span>
+        </button>
+      </div>
+      <p class="cover-hint" id="cover-install-hint"></p>
+    </div>
+    <footer class="app-footer floating"><span>Crafted with <span class="heart" aria-label="cinta">♥</span> by <a href="https://kurniapedia.my.id/" target="_blank" rel="noopener noreferrer"><strong>Kurniapedia</strong></a> 2026</span></footer>
+  </div>
+
   <!-- 3. DAFTAR ISI -->
   <div id="toc-screen" class="screen">
     <div class="top-bar">
@@ -127,14 +152,6 @@
     </div>
 
     <div class="toc-content" id="toc-scroll">
-      <div id="install-banner" class="install-banner">
-        <div>
-          <strong style="display: block; font-size: 0.95rem;">Install Modul Al Fatih</strong>
-          <span style="font-size: 0.8rem; opacity: 0.9;" id="install-text">Pasang sebagai aplikasi di perangkat Anda.</span>
-        </div>
-        <button class="btn" style="background: var(--on-primary); color: var(--primary); padding: 0.5rem 1rem;" data-action="install-app">Install</button>
-      </div>
-
       <div id="progress-card" class="progress-card" style="display:none;" data-action="open-reader" role="button" tabindex="0">
         <small>Terakhir dibaca</small>
         <div class="pc-title" id="pc-title">-</div>

@@ -1,0 +1,110 @@
+/* ============================================================
+   LAYAR 2.5: COVER
+   Halaman sambutan setelah login: logo, judul, tombol "Buka Daftar Isi"
+   dan tombol "Install Aplikasi".
+   ============================================================ */
+
+#cover-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.5rem 4rem;
+  overflow-y: auto; /* layar pendek / mode lanskap: isi bisa digulir */
+  background:
+    radial-gradient(600px circle at 10% 0%, var(--primary-light), transparent 60%),
+    radial-gradient(500px circle at 100% 100%, var(--primary-light), transparent 60%),
+    var(--bg-main);
+}
+
+#cover-screen .futuristic-grid { position: fixed; pointer-events: none; }
+
+.cover-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 340px;
+  margin: auto; /* tetap di tengah, tapi tidak terpotong saat layar pendek */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cover-logo-wrap {
+  position: relative;
+  width: 70px;
+  height: 120px;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+.cover-logo-wrap::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 220px; height: 220px;
+  margin: -110px 0 0 -110px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
+  border-radius: 50%;
+}
+
+.cover-logo { position: relative; width: 70px; height: 120px; }
+
+.cover-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--primary);
+}
+
+.cover-sub { margin-top: 0.4rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+
+.cover-greeting {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  overflow-wrap: anywhere;
+}
+
+.cover-actions {
+  width: 100%;
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cover-btn { width: 100%; padding: 0.85rem 1.25rem; font-size: 0.95rem; }
+
+.cover-hint {
+  margin-top: 0.85rem;
+  min-height: 1em;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* Muncul halus satu per satu (hanya transform/opacity; otomatis mati bila "reduce motion") */
+#cover-screen.active .cover-logo-wrap,
+#cover-screen.active .cover-title,
+#cover-screen.active .cover-sub,
+#cover-screen.active .cover-greeting,
+#cover-screen.active .cover-actions,
+#cover-screen.active .cover-hint {
+  animation: coverIn 0.5s ease both;
+}
+#cover-screen.active .cover-title { animation-delay: 0.06s; }
+#cover-screen.active .cover-sub { animation-delay: 0.12s; }
+#cover-screen.active .cover-greeting { animation-delay: 0.18s; }
+#cover-screen.active .cover-actions { animation-delay: 0.24s; }
+#cover-screen.active .cover-hint { animation-delay: 0.3s; }
+
+@keyframes coverIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}

@@ -4,12 +4,12 @@
 
 import { $ } from '../core/dom.js';
 import { state } from '../core/state.js';
-import { store } from '../core/storage.js';
+import { store, tabStore, isPageReload } from '../core/storage.js';
 import { clamp } from '../core/utils.js';
 import { isLoggedIn } from '../core/session.js';
 import {
   PAGE_OFFSET, MAX_PAGE_WIDTH, ZOOM_MIN, ZOOM_MAX,
-  MAX_CANVAS_PIXELS, MAX_PIXEL_RATIO, STORAGE_KEYS,
+  MAX_CANVAS_PIXELS, MAX_PIXEL_RATIO, STORAGE_KEYS, TAB_KEYS,
 } from '../config.js';
 import { showScreen } from '../ui/router.js';
 import { toast } from '../ui/toast.js';
@@ -22,6 +22,12 @@ import { setOverlay, describeLoadError } from './reader-overlay.js';
 export const canvas = $('pdf-canvas');
 export const viewer = $('pdf-viewer-container');
 const ctx = canvas.getContext('2d');
+
+/** Posisi baca (halaman + titik tengah layar) yang dipulihkan SEKALI setelah refresh. */
+let pendingPosition = null;
+if (isPageReload() && tabStore.get(TAB_KEYS.screen) === 'reader-screen') {
+  try { pendingPosition = JSON.parse(tabStore.get(TAB_KEYS.readerPos)); } catch (e) { pendingPosition = null; }
+}
 
 /** Keadaan gambar yang sedang tampil di kanvas (dipakai untuk pratinjau zoom instan). */
 const view = { page: 0, zoom: 1, width: 0, height: 0 };
@@ -55,7 +61,13 @@ export async function enterReader() {
     }
     setOverlay('hide');
     state.pageNum = clamp(state.pageNum, 1, state.pdfDoc.numPages);
-    renderPage(state.pageNum);
+
+    // Setelah refresh: kembali ke titik yang sama di halaman yang sama (bukan ke awal halaman).
+    const saved = pendingPosition;
+    pendingPosition = null;
+    const canRestore = saved && saved.page === state.pageNum
+      && Number.isFinite(saved.fx) && Number.isFinite(saved.fy);
+    renderPage(state.pageNum, canRestore ? { fx: clamp(saved.fx, 0, 1), fy: clamp(saved.fy, 0, 1) } : undefined);
   } catch (err) {
     console.error(err);
     const [title, detail] = describeLoadError(err);
@@ -151,6 +163,7 @@ export async function renderPage(pageNumber, anchor) {
 
     // Halaman baru: rata tengah & mulai dari atas. Zoom/rotasi: pertahankan titik tengah.
     restoreAnchor(keepAnchor || { fx: 0.5, fy: null });
+    savePosition();
   } catch (err) {
     if (err && err.name === 'RenderingCancelledException') return;
     console.error(err);
@@ -294,6 +307,15 @@ export function setZoom(zoomValue, silent, anchor) {
 export const zoomIn = () => setZoom(state.zoom * 1.25);
 export const zoomOut = () => setZoom(state.zoom / 1.25);
 
+/** Simpan halaman & titik tengah layar saat ini (hanya bila gambar sedang stabil, tidak dalam proses render). */
+function savePosition() {
+  if (!state.pdfDoc || state.renderTask || canvas.classList.contains('loading')) return;
+  if (!$('reader-screen').classList.contains('active')) return;
+  const anchor = captureAnchor();
+  if (!anchor) return;
+  tabStore.set(TAB_KEYS.readerPos, JSON.stringify({ page: state.pageNum, fx: anchor.fx, fy: anchor.fy }));
+}
+
 // ===============================================================
 // PENGATURAN EVENT
 // ===============================================================
@@ -315,6 +337,14 @@ export function setupReaderEvents() {
     if (e.key === 'Enter') { commitPage(); pageInput.blur(); }
   });
   pageInput.addEventListener('focus', () => pageInput.select());
+
+  // Simpan posisi baca (per tab) tiap selesai menggulir, agar bisa dipulihkan setelah refresh.
+  let scrollTimer;
+  viewer.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(savePosition, 200);
+  }, { passive: true });
+  window.addEventListener('pagehide', savePosition);
 
   // Gambar ulang saat ukuran layar berubah (rotasi HP / resize jendela)
   // (Hanya bila LEBAR berubah; perubahan tinggi akibat bilah alamat/keyboard tidak perlu gambar ulang.)

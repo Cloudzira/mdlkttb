@@ -10,7 +10,7 @@ import { sha256 } from '../core/utils.js';
 import { startSession, endSession } from '../core/session.js';
 import { PASSWORD_HASH } from '../config.js';
 import { ICON_EYE, ICON_EYE_OFF } from '../core/icons.js';
-import { showScreen } from '../ui/router.js';
+import { showScreen, showCover } from '../ui/router.js';
 import { showConfirm } from '../ui/dialogs.js';
 
 const SHAKE_DURATION_MS = 400;
@@ -47,7 +47,7 @@ async function handleLogin(e) {
   errorBox.style.display = 'none';
   startSession(name);
   $('password').value = '';
-  showScreen('toc-screen', { push: false, replace: true });
+  showCover(); // setelah login: cover dulu, baru daftar isi
 }
 
 /** Tampilkan / sembunyikan kata sandi (ikon mata). */

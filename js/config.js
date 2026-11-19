@@ -8,7 +8,7 @@
 // ---------------------------------------------------------------
 // Informasi aplikasi
 // ---------------------------------------------------------------
-export const APP_VERSION = '1.0.1';
+export const APP_VERSION = '1.0.3';
 
 // ---------------------------------------------------------------
 // Buku & akses
@@ -68,4 +68,10 @@ export const STORAGE_KEYS = {
   zoom: 'reader_zoom',
   bookTotal: 'book_total',
   notes: 'kurniapedia_notes',
+};
+
+// Kunci penyimpanan sementara per tab (sessionStorage) untuk memulihkan layar setelah refresh
+export const TAB_KEYS = {
+  screen: 'tab_screen',
+  readerPos: 'tab_reader_pos',
 };

@@ -16,15 +16,17 @@
  */
 
 import { $ } from './core/dom.js';
-import { isLoggedIn } from './core/session.js';
+import { isLoggedIn, getSessionName } from './core/session.js';
 
 import { setupActions } from './ui/actions.js';
-import { onEnterScreen, showScreen, showToc, showBookmarks, setupBackButton } from './ui/router.js';
+import { onEnterScreen, showScreen, showToc, showBookmarks, setupBackButton, PROTECTED_SCREENS } from './ui/router.js';
+import { tabStore, isPageReload } from './core/storage.js';
+import { TAB_KEYS } from './config.js';
 import { playSplash } from './ui/splash.js';
 import { toggleTheme, applyThemeIcon } from './ui/theme.js';
 import { openAbout } from './ui/about.js';
 
-import { setupInstallPrompt, setupIosInstallHint, installApp, registerServiceWorker } from './services/pwa.js';
+import { setupInstallPrompt, updateInstallUI, installApp, registerServiceWorker } from './services/pwa.js';
 import { setupWakeLock } from './services/wake-lock.js';
 
 import { setupAuthEvents, togglePassword, logout } from './features/auth.js';
@@ -45,6 +47,7 @@ const ACTIONS = {
   'open-about': openAbout,
   'show-bookmarks': showBookmarks,
   'show-toc': showToc,
+  'open-toc': showToc,
   'toggle-theme': toggleTheme,
   'toggle-night': toggleNight,
   'logout': logout,
@@ -63,6 +66,12 @@ const ACTIONS = {
 // 2. Aksi saat sebuah layar dibuka
 // ---------------------------------------------------------------
 function registerScreenHooks() {
+  onEnterScreen('cover-screen', () => {
+    const name = getSessionName();
+    $('cover-greeting').textContent = name ? `Assalamu\u2019alaikum, ${name}` : 'Assalamu\u2019alaikum';
+    updateInstallUI();
+    schedulePreload(); // siapkan buku selagi pengguna di cover
+  });
   onEnterScreen('toc-screen', () => {
     updateProgressCard();
     renderTocItems($('toc-search').value);
@@ -79,7 +88,9 @@ function afterSplash() {
   try {
     if (isLoggedIn()) {
       $('splash-screen').classList.remove('active');
-      showScreen('toc-screen', { push: false, replace: true });
+      // Sudah login: SETIAP masuk dimulai dari cover. Kecuali halaman hanya di-refresh:
+      // kembali ke layar yang sedang dibuka sebelumnya.
+      showScreen(screenToRestore() || 'cover-screen', { push: false, replace: true });
     } else {
       showScreen('login-screen', { push: false });
     }
@@ -89,6 +100,13 @@ function afterSplash() {
     document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
     $('login-screen').classList.add('active');
   }
+}
+
+/** Layar yang harus dipulihkan setelah refresh, atau null bila ini masuk baru (mulai dari cover). */
+function screenToRestore() {
+  if (!isLoggedIn() || !isPageReload()) return null;
+  const last = tabStore.get(TAB_KEYS.screen);
+  return PROTECTED_SCREENS.includes(last) ? last : null;
 }
 
 /** Jalankan satu langkah awal; bila error, langkah lain tetap berjalan. */
@@ -104,7 +122,9 @@ function init() {
   registerScreenHooks();
 
   // Splash SELALU berakhir, walaupun ada bagian lain yang error.
-  playSplash(afterSplash);
+  // Saat refresh di layar mana pun, lewati splash agar langsung kembali ke tempat semula.
+  if (screenToRestore()) afterSplash();
+  else playSplash(afterSplash);
 
   // Tampilan awal
   safely(applyThemeIcon);
@@ -125,7 +145,6 @@ function init() {
 
   // PWA
   registerServiceWorker();
-  setupIosInstallHint();
 }
 
 // Banner "Install" harus siap menangkap event dari browser sedini mungkin.

@@ -36,3 +36,30 @@ export const store = {
     }
   },
 };
+
+/**
+ * Penyimpanan sementara per tab (sessionStorage): bertahan saat halaman di-refresh,
+ * tetapi hilang saat tab/aplikasi ditutup. Dipakai untuk memulihkan layar & posisi baca setelah refresh.
+ */
+export const tabStore = {
+  get(key) {
+    try { return sessionStorage.getItem(key); } catch (e) { return null; }
+  },
+  set(key, value) {
+    try { sessionStorage.setItem(key, value); } catch (e) { /* abaikan */ }
+  },
+  remove(key) {
+    try { sessionStorage.removeItem(key); } catch (e) { /* abaikan */ }
+  },
+};
+
+/** Apakah halaman ini dibuka karena di-refresh (bukan dibuka baru)? */
+export function isPageReload() {
+  try {
+    const entry = performance.getEntriesByType('navigation')[0];
+    if (entry) return entry.type === 'reload';
+    return performance.navigation && performance.navigation.type === 1;
+  } catch (e) {
+    return false;
+  }
+}

@@ -9,9 +9,11 @@
 import { $ } from '../core/dom.js';
 import { isLoggedIn } from '../core/session.js';
 import { keepScreenAwake } from '../services/wake-lock.js';
+import { tabStore } from '../core/storage.js';
+import { TAB_KEYS } from '../config.js';
 
 /** Layar yang hanya boleh dibuka setelah login. */
-const PROTECTED_SCREENS = ['toc-screen', 'bookmarks-screen', 'reader-screen'];
+export const PROTECTED_SCREENS = ['cover-screen', 'toc-screen', 'bookmarks-screen', 'reader-screen'];
 
 /** Daftar aksi saat layar dibuka: { idLayar: fungsi } */
 const enterHooks = {};
@@ -35,6 +37,10 @@ export function showScreen(id, options = {}) {
   document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
   $(id).classList.add('active');
 
+  // Catat layar aktif (per tab) agar setelah refresh pengguna kembali ke layar yang sama.
+  if (PROTECTED_SCREENS.includes(id)) tabStore.set(TAB_KEYS.screen, id);
+  else tabStore.remove(TAB_KEYS.screen);
+
   // Layar pembaca: jaga layar tetap menyala. Layar lain: kembali normal.
   keepScreenAwake(id === 'reader-screen');
 
@@ -51,6 +57,7 @@ export function showScreen(id, options = {}) {
   if (enterHooks[id]) enterHooks[id]();
 }
 
+export const showCover = () => showScreen('cover-screen', { push: false, replace: true });
 export const showToc = () => showScreen('toc-screen', { push: false, replace: true });
 export const showBookmarks = () => showScreen('bookmarks-screen');
 
