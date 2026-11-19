@@ -5,7 +5,7 @@
 import { $ } from '../core/dom.js';
 import { closeAbout } from '../ui/about.js';
 import { showToc } from '../ui/router.js';
-import { nextPage, prevPage, zoomIn, zoomOut } from './reader.js';
+import { nextPage, prevPage, zoomIn, zoomOut, setZoom } from './reader.js';
 
 /**
  * Proteksi dasar (hanya penghalang ringan): blokir klik kanan serta
@@ -44,8 +44,9 @@ export function setupKeyboardShortcuts() {
 
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); nextPage(); }
     else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prevPage(); }
-    else if (e.key === '+' || e.key === '=') { zoomIn(); }
-    else if (e.key === '-') { zoomOut(); }
+    else if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomIn(); } // Ctrl + juga: cegah zoom halaman browser
+    else if (e.key === '-') { e.preventDefault(); zoomOut(); }
+    else if (e.key === '0' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); setZoom(1); }
     else if (e.key === 'Escape') { showToc(); }
   });
 }

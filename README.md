@@ -75,12 +75,12 @@ Jalankan lewat server lokal, misalnya:
 - VS Code: pasang ekstensi **Live Server**, lalu klik kanan `index.html` > *Open with Live Server*; atau
 - Terminal di folder ini: `python3 -m http.server 8000`, lalu buka <http://localhost:8000>.
 
-## Deploy (GitHub + Vercel)
+## Deploy (GitHub + Cloudflare Pages)
 
-Unggah seluruh isi folder ini ke repositori GitHub; Vercel akan menayangkannya apa adanya
-(tidak perlu build).
+Unggah seluruh isi folder ini ke repositori GitHub; Cloudflare Pages akan menayangkannya apa adanya
+(framework preset: None, build command kosong, output directory `/`).
 
 **PENTING setiap kali memperbarui file di `css/`, `js/`, atau `assets/`:** naikkan nomor versi
-`CACHE` di bagian atas `sw.js` (misalnya `alfatih-pwa-v14` menjadi `alfatih-pwa-v15`) agar
+`CACHE` di bagian atas `sw.js` (misalnya `alfatih-pwa-v16` menjadi `alfatih-pwa-v17`) agar
 HP pengguna ikut memperbarui. Jika menambah file baru di folder tersebut, tambahkan juga ke daftar `SHELL`
 di `sw.js` supaya ikut tersimpan untuk mode offline.

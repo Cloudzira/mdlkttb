@@ -64,7 +64,9 @@ async function fetchBook(onProgress) {
   const response = await fetch(BOOK_FILE);
   if (!response.ok) throw new Error('NOT_FOUND');
 
-  const totalBytes = parseInt(response.headers.get('Content-Length')) || 0;
+  // Bila server mengompres respons (mis. Cloudflare), Content-Length tidak cocok dengan data yang diterima.
+  const compressed = !!response.headers.get('Content-Encoding');
+  const totalBytes = compressed ? 0 : (parseInt(response.headers.get('Content-Length')) || 0);
   if (!response.body || !response.body.getReader) return await response.arrayBuffer();
 
   const reader = response.body.getReader();
@@ -76,7 +78,7 @@ async function fetchBook(onProgress) {
     if (done) break;
     chunks.push(value);
     receivedBytes += value.length;
-    if (totalBytes) onProgress(Math.min(0.99, receivedBytes / totalBytes));
+    onProgress(totalBytes ? Math.min(0.99, receivedBytes / totalBytes) : null, receivedBytes);
   }
 
   // Gabungkan semua potongan menjadi satu buffer.
@@ -131,8 +133,13 @@ export function loadPDF() {
     await ensurePdfJs();
 
     statusListener('Mengunduh dokumen...', DOWNLOAD_HINT, 0);
-    const encrypted = await fetchBook((progress) => {
-      statusListener(`Mengunduh dokumen... ${Math.round(progress * 100)}%`, DOWNLOAD_HINT, progress);
+    const encrypted = await fetchBook((progress, receivedBytes) => {
+      if (progress === null) {
+        // Ukuran total tidak diketahui: tampilkan jumlah yang sudah diunduh, tanpa bilah.
+        statusListener(`Mengunduh dokumen... ${(receivedBytes / 1048576).toFixed(1)} MB`, DOWNLOAD_HINT, null);
+      } else {
+        statusListener(`Mengunduh dokumen... ${Math.round(progress * 100)}%`, DOWNLOAD_HINT, progress);
+      }
     });
 
     statusListener('Membuka dokumen aman...', 'Sedang mendekripsi isi buku.', 1);

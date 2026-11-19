@@ -5,7 +5,7 @@
  * sehingga mudah dilacak siapa yang mengubah apa.
  */
 
-import { STORAGE_KEYS } from '../config.js';
+import { STORAGE_KEYS, ZOOM_MIN, ZOOM_MAX } from '../config.js';
 import { store } from './storage.js';
 
 export const state = {
@@ -17,7 +17,7 @@ export const state = {
   /** Halaman PDF yang sedang dibaca (dimulai dari 1). */
   pageNum: parseInt(store.get(STORAGE_KEYS.savedPage, '1')) || 1,
   /** Tingkat zoom (1 = pas lebar layar). */
-  zoom: parseFloat(store.get(STORAGE_KEYS.zoom, '1')) || 1,
+  zoom: Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, parseFloat(store.get(STORAGE_KEYS.zoom, '1')) || 1)),
   /** Mode baca malam (warna halaman dibalik). */
   nightMode: store.get(STORAGE_KEYS.nightMode) === '1',
 

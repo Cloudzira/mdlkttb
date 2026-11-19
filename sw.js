@@ -3,10 +3,10 @@
  *
  * Letakkan di folder yang sama dengan index.html.
  * PENTING: setiap kali Anda mengubah file di css/, js/, atau assets/,
- * naikkan nomor versi pada CACHE di bawah (mis. v14 -> v15) agar HP pengguna ikut memperbarui.
+ * naikkan nomor versi pada CACHE di bawah (mis. v15 -> v16) agar HP pengguna ikut memperbarui.
  */
 
-const CACHE = 'alfatih-pwa-v15';
+const CACHE = 'alfatih-pwa-v16';
 
 // File aplikasi yang disimpan saat pemasangan (kecil-kecil).
 // Buku (buku.enc, besar) disimpan setelah pertama kali dibaca.
@@ -75,7 +75,7 @@ const CDN = [
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
-    await Promise.allSettled([...SHELL, ...CDN].map((url) => cache.add(url)));
+    await Promise.allSettled([...SHELL, ...CDN].map((url) => cache.add(new Request(url, { cache: 'reload' }))));
     self.skipWaiting();
   })());
 });

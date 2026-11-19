@@ -23,6 +23,9 @@ export const canvas = $('pdf-canvas');
 export const viewer = $('pdf-viewer-container');
 const ctx = canvas.getContext('2d');
 
+/** Keadaan gambar yang sedang tampil di kanvas (dipakai untuk pratinjau zoom instan). */
+const view = { page: 0, zoom: 1, width: 0, height: 0 };
+
 // ===============================================================
 // MEMUAT DOKUMEN
 // ===============================================================
@@ -73,7 +76,9 @@ export function retryLoad() {
 /**
  * Gambar halaman PDF ke kanvas.
  * @param {number} pageNumber  Nomor halaman PDF.
- * @param {{fx:number, fy:number|null}} [anchor]  Titik tengah yang dipertahankan saat zoom/rotasi.
+ * @param {{fx:number, fy:number|null}|'keep'} [anchor]
+ *        Titik tengah yang dipertahankan. Kosong = halaman baru (rata tengah, mulai dari atas).
+ *        'keep' = pertahankan posisi layar saat ini (dipakai saat zoom/rotasi).
  */
 export async function renderPage(pageNumber, anchor) {
   if (!state.pdfDoc) return;
@@ -88,7 +93,8 @@ export async function renderPage(pageNumber, anchor) {
     state.renderTask = null;
   }
   updateReaderUI();
-  canvas.classList.add('loading');
+  // Redupkan hanya saat ganti halaman; saat zoom/rotasi gambar lama tetap terang (tanpa berkedip).
+  if (pageNumber !== view.page) canvas.classList.add('loading');
 
   try {
     const page = await state.pdfDoc.getPage(pageNumber);
@@ -121,6 +127,9 @@ export async function renderPage(pageNumber, anchor) {
     await state.renderTask.promise;
     if (token !== state.renderToken) return;
 
+    // Zoom/rotasi: catat titik tengah layar tepat sebelum gambar diganti (pengguna mungkin sudah menggeser).
+    const keepAnchor = anchor === 'keep' ? captureAnchor() : anchor;
+
     canvas.width = offscreen.width;
     canvas.height = offscreen.height;
     ctx.drawImage(offscreen, 0, 0);
@@ -131,13 +140,24 @@ export async function renderPage(pageNumber, anchor) {
     canvas.classList.remove('loading');
     state.renderTask = null;
 
+    // Lepaskan memori kanvas sementara (penting di iPhone/Safari agar tidak crash saat zoom besar).
+    offscreen.width = offscreen.height = 0;
+    try { page.cleanup(); } catch (e) { /* abaikan */ }
+
+    view.page = pageNumber;
+    view.zoom = state.zoom;
+    view.width = cssWidth;
+    view.height = cssHeight;
+
     // Halaman baru: rata tengah & mulai dari atas. Zoom/rotasi: pertahankan titik tengah.
-    restoreAnchor(anchor || { fx: 0.5, fy: null });
+    restoreAnchor(keepAnchor || { fx: 0.5, fy: null });
   } catch (err) {
     if (err && err.name === 'RenderingCancelledException') return;
     console.error(err);
     if (token === state.renderToken) {
       canvas.classList.remove('loading');
+      canvas.style.transform = '';
+      canvas.style.transformOrigin = '';
       toast('Gagal menampilkan halaman. Coba lagi.');
     }
   }
@@ -205,22 +225,29 @@ export function goToExactPage(page) {
 // ZOOM
 // ===============================================================
 
-/** Titik tengah layar pada halaman (pecahan 0..1), agar zoom selalu berpusat di tengah. */
-export function captureAnchor() {
+/**
+ * Titik pada halaman (pecahan 0..1) yang berada di posisi (x, y) layar.
+ * Tanpa argumen = titik tengah area baca. Nilai selalu dibatasi 0..1 sehingga zoom tidak
+ * "melompat" ketika halaman lebih kecil dari layar (mis. saat diperkecil).
+ */
+export function captureAnchor(x, y) {
   const viewerRect = viewer.getBoundingClientRect();
   const canvasRect = canvas.getBoundingClientRect();
   if (!canvasRect.width || !canvasRect.height) return null;
-  return {
-    fx: ((viewerRect.left + viewerRect.width / 2) - canvasRect.left) / canvasRect.width,
-    fy: ((viewerRect.top + viewerRect.height / 2) - canvasRect.top) / canvasRect.height,
-  };
+  const px = x === undefined ? viewerRect.left + viewerRect.width / 2 : x;
+  const py = y === undefined ? viewerRect.top + viewerRect.height / 2 : y;
+  const fx = clamp((px - canvasRect.left) / canvasRect.width, 0, 1);
+  let fy = clamp((py - canvasRect.top) / canvasRect.height, 0, 1);
+  // Halaman lebih pendek dari layar (zoom kecil): zoom berpusat di tengah halaman, bukan di tepi bawahnya.
+  if (y === undefined && canvasRect.height < viewerRect.height) fy = 0.5;
+  return { fx, fy };
 }
 
 /** Gulir agar titik anchor kembali berada di tengah layar. */
 function restoreAnchor(anchor) {
+  if (!anchor) return;
   const viewerRect = viewer.getBoundingClientRect();
   const canvasRect = canvas.getBoundingClientRect();
-  if (!anchor) return;
 
   viewer.scrollLeft += (canvasRect.left + anchor.fx * canvasRect.width) - (viewerRect.left + viewerRect.width / 2);
   if (anchor.fy === null) viewer.scrollTop = 0;
@@ -229,19 +256,39 @@ function restoreAnchor(anchor) {
 
 /**
  * Ubah zoom.
+ * Gambar lama langsung diperbesar/diperkecil seketika (pratinjau), lalu digambar ulang
+ * dengan tajam di latar belakang.
  * @param {number}  zoomValue  Zoom baru.
  * @param {boolean} [silent]   true = jangan tampilkan pesan "Zoom xx%".
- * @param {object}  [anchor]   Titik tengah yang dipertahankan.
+ * @param {object}  [anchor]   Titik yang dipertahankan di tengah layar (bawaan: titik tengah layar).
  */
 export function setZoom(zoomValue, silent, anchor) {
-  const next = clamp(Math.round(zoomValue * 100) / 100, ZOOM_MIN, ZOOM_MAX);
-  if (next === state.zoom) return;
+  let next = clamp(Math.round(zoomValue * 100) / 100, ZOOM_MIN, ZOOM_MAX);
+  if (Math.abs(next - 1) < 0.04) next = 1; // mudah kembali ke "pas layar"
+  if (next === state.zoom) {
+    // Pastikan sisa pratinjau cubitan (jika ada) dibersihkan.
+    canvas.style.transform = '';
+    canvas.style.transformOrigin = '';
+    return;
+  }
 
   const keepAnchor = anchor || captureAnchor();
+  const previousZoom = view.zoom || state.zoom;
   state.zoom = next;
   store.set(STORAGE_KEYS.zoom, state.zoom);
   if (!silent) toast(`Zoom ${Math.round(state.zoom * 100)}%`, { duration: 900 });
-  if (state.pdfDoc) renderPage(state.pageNum, keepAnchor);
+  if (!state.pdfDoc) return;
+
+  // Pratinjau instan: ubah ukuran tampil gambar lama sesuai zoom baru.
+  if (view.width && view.height && keepAnchor) {
+    const ratio = next / previousZoom;
+    canvas.style.transform = '';
+    canvas.style.transformOrigin = '';
+    canvas.style.width = (view.width * ratio) + 'px';
+    canvas.style.height = (view.height * ratio) + 'px';
+    restoreAnchor(keepAnchor);
+  }
+  renderPage(state.pageNum, 'keep');
 }
 
 export const zoomIn = () => setZoom(state.zoom * 1.25);
@@ -270,13 +317,17 @@ export function setupReaderEvents() {
   pageInput.addEventListener('focus', () => pageInput.select());
 
   // Gambar ulang saat ukuran layar berubah (rotasi HP / resize jendela)
+  // (Hanya bila LEBAR berubah; perubahan tinggi akibat bilah alamat/keyboard tidak perlu gambar ulang.)
   let resizeTimer;
+  let lastWidth = viewer.clientWidth;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      if (state.pdfDoc && $('reader-screen').classList.contains('active')) {
-        renderPage(state.pageNum, captureAnchor());
-      }
+      if (!state.pdfDoc || !$('reader-screen').classList.contains('active')) return;
+      const width = viewer.clientWidth;
+      if (!width || width === lastWidth) return;
+      lastWidth = width;
+      renderPage(state.pageNum, 'keep');
     }, 250);
   });
 }
