@@ -3,10 +3,10 @@
  *
  * Letakkan di folder yang sama dengan index.html.
  * PENTING: setiap kali Anda mengubah file di css/, js/, atau assets/,
- * naikkan nomor versi pada CACHE di bawah (mis. v17 -> v18) agar HP pengguna ikut memperbarui.
+ * naikkan nomor versi pada CACHE di bawah (mis. v18 -> v19) agar HP pengguna ikut memperbarui.
  */
 
-const CACHE = 'alfatih-pwa-v18';
+const CACHE = 'alfatih-pwa-v19';
 
 // File aplikasi yang disimpan saat pemasangan (kecil-kecil).
 // Buku (buku.enc, besar) disimpan setelah pertama kali dibaca.
@@ -19,6 +19,7 @@ const SHELL = [
   './icon-maskable-512.png',
   './assets/favicon.png',
   './assets/logo.png',
+  './assets/cover.jpg',
   './css/accessibility.css',
   './css/base/base.css',
   './css/base/variables.css',

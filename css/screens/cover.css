@@ -29,42 +29,28 @@
   text-align: center;
 }
 
-.cover-logo-wrap {
+/* Sampul buku (halaman 1 PDF) */
+.cover-book {
   position: relative;
-  width: 70px;
-  height: 120px;
-  margin-bottom: 1.5rem;
+  height: min(50dvh, 480px);
+  max-width: 100%;
+  aspect-ratio: 720 / 1109;
+  margin: 0 auto 1.4rem;
   flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border-color), 0 0 60px -10px var(--accent-glow);
 }
+.cover-img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; pointer-events: none; }
 
-.cover-logo-wrap::before {
-  content: '';
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 220px; height: 220px;
-  margin: -110px 0 0 -110px;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
-  border-radius: 50%;
-}
+.cover-info { width: 100%; display: flex; flex-direction: column; align-items: center; }
 
-.cover-logo { position: relative; width: 70px; height: 120px; }
-
-.cover-title {
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  line-height: 1.2;
-  background: var(--grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: var(--primary);
-}
-
-.cover-sub { margin-top: 0.4rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+/* Teks untuk pembaca layar saja */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 .cover-greeting {
-  margin-top: 1.25rem;
+  margin-top: 0;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-main);
@@ -73,7 +59,7 @@
 
 .cover-actions {
   width: 100%;
-  margin-top: 1.75rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -90,16 +76,12 @@
 }
 
 /* Muncul halus satu per satu (hanya transform/opacity; otomatis mati bila "reduce motion") */
-#cover-screen.active .cover-logo-wrap,
-#cover-screen.active .cover-title,
-#cover-screen.active .cover-sub,
+#cover-screen.active .cover-book,
 #cover-screen.active .cover-greeting,
 #cover-screen.active .cover-actions,
 #cover-screen.active .cover-hint {
   animation: coverIn 0.5s ease both;
 }
-#cover-screen.active .cover-title { animation-delay: 0.06s; }
-#cover-screen.active .cover-sub { animation-delay: 0.12s; }
 #cover-screen.active .cover-greeting { animation-delay: 0.18s; }
 #cover-screen.active .cover-actions { animation-delay: 0.24s; }
 #cover-screen.active .cover-hint { animation-delay: 0.3s; }
@@ -107,4 +89,16 @@
 @keyframes coverIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
+}
+
+/* Layar pendek (HP kecil): sampul sedikit lebih kecil agar tombol tetap terlihat */
+@media (max-height: 700px) {
+  .cover-book { height: min(40dvh, 480px); margin-bottom: 1rem; }
+}
+
+/* Lanskap: sampul di kiri, tombol di kanan */
+@media (orientation: landscape) and (max-height: 520px) {
+  .cover-content { max-width: 620px; flex-direction: row; align-items: center; justify-content: center; gap: 2rem; }
+  .cover-book { height: min(78dvh, 360px); margin: 0; }
+  .cover-info { max-width: 300px; }
 }

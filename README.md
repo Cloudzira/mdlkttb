@@ -17,6 +17,7 @@ mdlkttb-main/
 │
 ├── assets/             Gambar
 │   ├── logo.png            Logo aplikasi
+│   ├── cover.jpg           Sampul di layar cover (halaman 1 dari buku.enc)
 │   └── favicon.png         Ikon tab browser
 │
 ├── css/                Tampilan (urutan pemuatan ada di index.html)
@@ -82,6 +83,6 @@ Unggah seluruh isi folder ini ke repositori GitHub; Cloudflare Pages akan menaya
 (framework preset: None, build command kosong, output directory `/`).
 
 **PENTING setiap kali memperbarui file di `css/`, `js/`, atau `assets/`:** naikkan nomor versi
-`CACHE` di bagian atas `sw.js` (misalnya `alfatih-pwa-v18` menjadi `alfatih-pwa-v19`) agar
+`CACHE` di bagian atas `sw.js` (misalnya `alfatih-pwa-v19` menjadi `alfatih-pwa-v20`) agar
 HP pengguna ikut memperbarui. Jika menambah file baru di folder tersebut, tambahkan juga ke daftar `SHELL`
 di `sw.js` supaya ikut tersimpan untuk mode offline.
